@@ -428,6 +428,79 @@
     font-size: 14px;
     background: #fff;
   }
+
+  /* ---------- SCOREBOARD STYLE ---------- */
+  .scoreboard-container {
+    margin: 24px auto 0;
+    max-width: 600px;
+    background: var(--wall);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .scoreboard-header {
+    background: var(--teal-dark);
+    color: var(--paper);
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+  }
+  .scoreboard-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--ink);
+    background: var(--wall-dark);
+  }
+  .scoreboard-tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: background 0.15s ease;
+  }
+  .scoreboard-tab.active {
+    background: var(--mustard);
+    color: var(--navy);
+  }
+  .scoreboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: #fff;
+  }
+  .scoreboard-table th {
+    background: var(--paper);
+    padding: 8px;
+    text-align: left;
+    border-bottom: 2px solid var(--ink);
+    font-size: 11px;
+  }
+  .scoreboard-table td {
+    padding: 8px;
+    border-bottom: 1px solid var(--wall);
+  }
+  .scoreboard-table tr:nth-child(even) {
+    background: var(--paper);
+  }
+  .rank-badge {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 11px;
+    border: 1px solid var(--ink);
+  }
+  .rank-1 { background: var(--mustard); color: var(--navy); }
+  .rank-2 { background: #e0e0e0; color: #111; }
+  .rank-3 { background: #cd7f32; color: #fff; }
 </style>
 </head>
 <body>
@@ -685,7 +758,11 @@ const FLOORS = [
 let state = {
   screen:"title", // title | lobby | floor | ending
   currentFloor:1,
-  resolved:{} // hotspotId: true
+  resolved:{}, // hotspotId: true (indicates answered)
+  answers:{},  // hotspotId: { correct: boolean, choiceText: string, feedback: string }
+  teamKey: null,
+  isSolo: true,
+  teamName: ""
 };
 
 function totalHotspots(){ return FLOORS.reduce((n,f)=>n+f.hotspots.length,0); }
@@ -695,6 +772,129 @@ function isFloorCleared(floor){ return floorResolvedCount(floor)===floor.hotspot
 function isFloorUnlocked(floorIdx){
   if(floorIdx===0) return true;
   return isFloorCleared(FLOORS[floorIdx-1]);
+}
+
+/* ============ SCOREBOARD HELPER ============ */
+function renderScoreboard(target) {
+  const container = typeof target === 'string' ? document.getElementById(target) : target;
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="scoreboard-container">
+      <div class="scoreboard-header">
+        <span style="font-family:'Alfa Slab One'; font-size:12px; letter-spacing:1px;">LEADERBOARD</span>
+        <span style="font-size:9px; opacity:0.8;">TOP INSPECTORS</span>
+      </div>
+      <div class="scoreboard-tabs">
+        <div class="scoreboard-tab active" id="sbTabTeams">TEAMS</div>
+        <div class="scoreboard-tab" id="sbTabSolo">SOLO AGENTS</div>
+      </div>
+      <div id="scoreboardList" style="max-height: 220px; overflow-y: auto; background:#fff;">
+        <div style="padding: 16px; text-align: center; font-style: italic; color:#666;">Loading scores...</div>
+      </div>
+    </div>
+  `;
+
+  const listEl = container.querySelector('#scoreboardList');
+  const tabTeams = container.querySelector('#sbTabTeams');
+  const tabSolo = container.querySelector('#sbTabSolo');
+
+  let currentTab = 'teams'; 
+  let allEntries = [];
+
+  function updateList() {
+    if (allEntries.length === 0) {
+      listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">No completed runs recorded.</div>`;
+      return;
+    }
+
+    const filtered = allEntries.filter(entry => {
+      const isSoloEntry = !!entry.isSolo || (entry.teamName && entry.teamName.includes('(Solo)'));
+      return currentTab === 'solo' ? isSoloEntry : !isSoloEntry;
+    });
+
+    filtered.sort((a, b) => {
+      const scoreA = typeof a.score === 'number' ? a.score : 0;
+      const scoreB = typeof b.score === 'number' ? b.score : 0;
+      if (scoreB !== scoreA) return scoreB - scoreA;
+      return new Date(a.timestamp || 0) - new Date(b.timestamp || 0);
+    });
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">No entries for this category yet.</div>`;
+      return;
+    }
+
+    let html = `
+      <table class="scoreboard-table">
+        <thead>
+          <tr>
+            <th style="width:40px; text-align:center;">Rank</th>
+            <th>Name</th>
+            <th>Members</th>
+            <th style="width:65px; text-align:right;">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    filtered.slice(0, 10).forEach((entry, idx) => {
+      const score = typeof entry.score === 'number' ? entry.score : 0;
+      const name = entry.teamName || "Unnamed Team";
+      const members = entry.teamMembers || "Anonymous";
+      const rankClass = idx < 3 ? `rank-${idx+1}` : '';
+      
+      html += `
+        <tr>
+          <td style="text-align:center;"><span class="rank-badge ${rankClass}">${idx+1}</span></td>
+          <td style="font-weight:bold;">${name}</td>
+          <td style="color:#555; font-size:11px;">${members}</td>
+          <td style="text-align:right; font-weight:bold; color:var(--burgundy);">${score}/15</td>
+        </tr>
+      `;
+    });
+
+    html += `
+        </tbody>
+      </table>
+    `;
+    listEl.innerHTML = html;
+  }
+
+  tabTeams.onclick = () => {
+    currentTab = 'teams';
+    tabTeams.classList.add('active');
+    tabSolo.classList.remove('active');
+    updateList();
+  };
+
+  tabSolo.onclick = () => {
+    currentTab = 'solo';
+    tabSolo.classList.add('active');
+    tabTeams.classList.remove('active');
+    updateList();
+  };
+
+  if (window.db && window.firebaseGet && window.firebaseRef) {
+    window.firebaseGet(window.firebaseRef(window.db, 'teams'))
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          allEntries = Object.keys(val).map(key => ({
+            id: key,
+            ...val[key]
+          })).filter(entry => entry.score !== undefined); 
+          updateList();
+        } else {
+          listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">No completed runs recorded yet.</div>`;
+        }
+      })
+      .catch(err => {
+        listEl.innerHTML = `<div style="padding: 16px; text-align: center; color:var(--danger); font-size:11px;">Error loading scores: ${err.message}</div>`;
+      });
+  } else {
+    listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">Database offline.</div>`;
+  }
 }
 
 /* ============ RENDER ============ */
@@ -733,15 +933,17 @@ function renderTitle(){
             <div><b>YOUR ROLE:</b> Cybersecurity Inspector</div>
             <div><b>MISSION:</b> Investigate every floor, spot the unsafe practice, and choose the right fix.</div>
           </div>
-          <div>
+          <div style="margin-bottom: 24px;">
             <button class="btn" id="startBtn">Begin Inspection</button>
           </div>
+          <div id="titleScoreboard"></div>
         </div>
         <div class="timestamp">CAM 01 — LOBBY</div>
       </div>
     </div>
   `);
   wrap.querySelector('#startBtn').onclick = ()=>{ state.screen="registration"; render(); };
+  renderScoreboard(wrap.querySelector('#titleScoreboard'));
   return wrap;
 }
 
@@ -870,7 +1072,6 @@ function renderRegistration(){
           activeTeams = snapshot.val();
           selectEl.innerHTML = "";
           
-          // Add teams to dropdown
           Object.keys(activeTeams).forEach(key => {
             const opt = document.createElement('option');
             opt.value = key;
@@ -878,7 +1079,6 @@ function renderRegistration(){
             selectEl.appendChild(opt);
           });
 
-          // Show info for first team
           const firstKey = Object.keys(activeTeams)[0];
           if (firstKey) {
             membersSpan.textContent = activeTeams[firstKey].teamMembers || "No members listed";
@@ -895,7 +1095,6 @@ function renderRegistration(){
       });
   }
 
-  // Update members preview when team selection changes
   wrap.querySelector('#joinTeamSelect').onchange = (e) => {
     const selectedKey = e.target.value;
     const membersSpan = wrap.querySelector('#membersList');
@@ -916,16 +1115,19 @@ function renderRegistration(){
 
       if (window.db && window.firebasePush && window.firebaseRef && window.firebaseSet) {
         const teamsRef = window.firebasePush(window.firebaseRef(window.db, 'teams'));
+        state.teamKey = teamsRef.key;
+        state.isSolo = true;
+        state.teamName = `${sName} (Solo)`;
         window.firebaseSet(teamsRef, {
           teamName: `${sName} (Solo)`,
           teamMembers: sName,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          isSolo: true
         }).then(() => {
           state.screen = "lobby";
           render();
         }).catch(err => {
           console.error("Error saving solo run:", err);
-          // Proceed anyway on database failure
           state.screen = "lobby";
           render();
         });
@@ -934,8 +1136,10 @@ function renderRegistration(){
         render();
       }
     } else {
-      // Anonymous or empty name
       state.screen = "lobby";
+      state.teamKey = null;
+      state.isSolo = true;
+      state.teamName = sName ? `${sName} (Solo)` : "Anonymous Solo";
       render();
     }
   };
@@ -961,6 +1165,10 @@ function renderRegistration(){
 
     const currentMembers = activeTeams[selectedKey].teamMembers || "";
     const updatedMembers = currentMembers ? `${currentMembers}, ${newMember}` : newMember;
+
+    state.teamKey = selectedKey;
+    state.isSolo = false;
+    state.teamName = activeTeams[selectedKey].teamName || "Unnamed Team";
 
     if (window.db && window.firebaseRef && window.firebaseUpdate) {
       const teamRef = window.firebaseRef(window.db, `teams/${selectedKey}`);
@@ -996,10 +1204,14 @@ function renderRegistration(){
 
     if(window.db && window.firebasePush && window.firebaseRef && window.firebaseSet) {
       const teamsRef = window.firebasePush(window.firebaseRef(window.db, 'teams'));
+      state.teamKey = teamsRef.key;
+      state.isSolo = false;
+      state.teamName = tName;
       window.firebaseSet(teamsRef, {
         teamName: tName,
         teamMembers: tMembers,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        isSolo: false
       }).then(() => {
         state.screen="lobby"; 
         render();
@@ -1092,13 +1304,10 @@ function renderFloor(){
     </div>
   `);
 
-  // decorative furniture (purely visual, varies slightly per floor)
   const room = wrap.querySelector('#room');
   
-  // Set realistic background image
   room.style.background = `url('./floor${floor.id}_bg.png') center/cover no-repeat`;
   
-  // Add a dark overlay so hotspots remain visible against complex backgrounds
   const overlay = el(`<div style="position:absolute; inset:0; background:rgba(20,20,30,0.45); z-index:1; pointer-events:none;"></div>`);
   room.appendChild(overlay);
 
@@ -1159,19 +1368,22 @@ function openInvestigation(floor, hotspot){
       const cbtn = el(`<button class="choice-btn">${choice.text}</button>`);
       cbtn.onclick = ()=>{
         choicesWrap.innerHTML = "";
-        feedbackWrap.innerHTML = `<div class="feedback ${choice.correct?'correct':'wrong'}">${choice.correct?'✔ RESOLVED — ':'✘ NOT QUITE — '}${choice.feedback}</div>`;
-        if(choice.correct){
-          state.resolved[hotspot.id] = true;
-          actionsWrap.innerHTML = "";
-          const doneBtn = el(`<button class="btn small">Close Case File</button>`);
-          doneBtn.onclick = ()=>{ document.body.removeChild(overlay); render(); };
-          actionsWrap.appendChild(doneBtn);
-        } else {
-          const retryBtn = el(`<button class="btn small secondary">Try Again</button>`);
-          retryBtn.onclick = showChoices;
-          actionsWrap.innerHTML = "";
-          actionsWrap.appendChild(retryBtn);
-        }
+        
+        // Record answer
+        state.answers[hotspot.id] = {
+          correct: choice.correct,
+          choiceText: choice.text,
+          feedback: choice.feedback,
+          title: hotspot.title
+        };
+        state.resolved[hotspot.id] = true;
+
+        feedbackWrap.innerHTML = `<div class="feedback" style="background:var(--wall); color:var(--ink); border-color:var(--ink);">✔ Investigation response recorded in case files. Results will be shown on the final audit report.</div>`;
+        
+        actionsWrap.innerHTML = "";
+        const doneBtn = el(`<button class="btn small">Close Case File</button>`);
+        doneBtn.onclick = ()=>{ document.body.removeChild(overlay); render(); };
+        actionsWrap.appendChild(doneBtn);
       };
       choicesWrap.appendChild(cbtn);
     });
@@ -1182,6 +1394,17 @@ function openInvestigation(floor, hotspot){
 }
 
 function renderEnding(){
+  const correctCount = Object.values(state.answers).filter(a=>a.correct).length;
+  
+  if(window.db && window.firebaseRef && window.firebaseUpdate && state.teamKey) {
+    const teamRef = window.firebaseRef(window.db, `teams/${state.teamKey}`);
+    window.firebaseUpdate(teamRef, {
+      score: correctCount,
+      completed: true,
+      timestamp: new Date().toISOString()
+    }).catch(err => console.error("Error saving score:", err));
+  }
+
   const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
@@ -1193,20 +1416,45 @@ function renderEnding(){
         <div class="ending">
           <div class="certificate">
             <h2>Certificate of Cyber Vigilance</h2>
-            <div class="line">Awarded to <b>The Inspector</b></div>
-            <div class="line">for resolving all <b>${totalHotspots()}</b> unsafe practices across <b>${FLOORS.length}</b> floors of UNSAFE Business Inc.</div>
-            <div class="line sticky">Case status: CLOSED ✔</div>
+            <div class="line">Awarded to <b>${state.teamName || 'The Inspector'}</b></div>
+            <div class="line" style="margin: 12px 0;">
+              Score: <span style="font-family:'Alfa Slab One'; font-size: 24px; color: var(--burgundy);">${correctCount} / ${totalHotspots()}</span> Correct
+            </div>
+            <div class="line">for completing the cybersecurity audit of UNSAFE Business Inc.</div>
+            <div class="line sticky">Audit Status: COMPLETED ✔</div>
           </div>
+
           <div class="recap">
-            <h3 style="font-size:14px; margin-bottom:8px;">What got fixed, floor by floor:</h3>
+            <h3 style="font-size:14px; margin-bottom:12px; border-bottom: 2px solid var(--ink); padding-bottom: 4px;">Detailed Audit Results:</h3>
             ${FLOORS.map(f=>`
-              <div style="margin-bottom:10px;">
-                <b>${f.name}</b>
-                <ul>${f.hotspots.map(h=>`<li>${h.title}</li>`).join("")}</ul>
+              <div style="margin-bottom:16px; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 4px; border: 2px solid var(--ink);">
+                <b style="color:var(--teal-dark); font-size:13px;">${f.name}</b>
+                <div style="margin-top:8px; display:flex; flex-direction:column; gap:10px;">
+                  ${f.hotspots.map(h=>{
+                    const ans = state.answers[h.id] || { correct: false, choiceText: "No answer recorded", feedback: "N/A" };
+                    const statusClass = ans.correct ? 'correct' : 'wrong';
+                    const statusSymbol = ans.correct ? '✔' : '✘';
+                    return `
+                      <div style="font-size:12px; border-left: 4px solid ${ans.correct ? 'var(--good)' : 'var(--danger)'}; padding-left: 8px;">
+                        <div style="font-weight:bold; display:flex; justify-content:space-between;">
+                          <span>${h.title}</span>
+                          <span style="color:${ans.correct?'var(--good)':'var(--danger)'}; font-weight:bold;">${statusSymbol} ${ans.correct?'Correct':'Incorrect'}</span>
+                        </div>
+                        <div style="margin:4px 0; color:#555; font-style:italic;">"${ans.choiceText}"</div>
+                        <div class="feedback ${statusClass}" style="margin-top:2px; padding:8px; font-size:11.5px; border-radius:3px;">
+                          ${ans.feedback}
+                        </div>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
               </div>
             `).join("")}
           </div>
-          <div style="margin-top:10px;">
+
+          <div id="endingScoreboard" style="margin-top: 32px; text-align: left;"></div>
+
+          <div style="margin-top:24px;">
             <button class="btn" id="againBtn">Restart Investigation</button>
           </div>
         </div>
@@ -1215,9 +1463,10 @@ function renderEnding(){
     </div>
   `);
   wrap.querySelector('#againBtn').onclick = ()=>{
-    state = { screen:"title", currentFloor:1, resolved:{} };
+    state = { screen:"title", currentFloor:1, resolved:{}, answers:{}, teamKey: null, isSolo: true, teamName: "" };
     render();
   };
+  renderScoreboard(wrap.querySelector('#endingScoreboard'));
   return wrap;
 }
 
@@ -1225,4 +1474,5 @@ render();
 </script>
 </body>
 </html>
+
 
