@@ -29,6 +29,10 @@
   window.firebaseGet = get;
   window.firebaseChild = child;
   window.firebaseUpdate = update;
+
+  if (typeof window.onFirebaseInit === 'function') {
+    window.onFirebaseInit();
+  }
 </script>
 <style>
   :root{
@@ -802,6 +806,22 @@ function renderScoreboard(target) {
   let currentTab = 'teams'; 
   let allEntries = [];
 
+  // Load from local storage cache first
+  try {
+    const cached = localStorage.getItem('cachedScoreboard');
+    if (cached) {
+      allEntries = JSON.parse(cached);
+    }
+    const localRuns = JSON.parse(localStorage.getItem('localRuns') || '[]');
+    localRuns.forEach(run => {
+      if (!allEntries.some(e => e.timestamp === run.timestamp && e.score === run.score)) {
+        allEntries.push(run);
+      }
+    });
+  } catch (e) {
+    console.error("Local storage error:", e);
+  }
+
   function updateList() {
     if (allEntries.length === 0) {
       listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">No completed runs recorded.</div>`;
@@ -875,25 +895,48 @@ function renderScoreboard(target) {
     updateList();
   };
 
+  updateList();
+
   if (window.db && window.firebaseGet && window.firebaseRef) {
     window.firebaseGet(window.firebaseRef(window.db, 'teams'))
       .then(snapshot => {
         if (snapshot.exists()) {
           const val = snapshot.val();
-          allEntries = Object.keys(val).map(key => ({
+          const remoteEntries = Object.keys(val).map(key => ({
             id: key,
             ...val[key]
           })).filter(entry => entry.score !== undefined); 
+          
+          try {
+            localStorage.setItem('cachedScoreboard', JSON.stringify(remoteEntries));
+          } catch(e) {}
+          
+          allEntries = [...remoteEntries];
+          try {
+            const localRuns = JSON.parse(localStorage.getItem('localRuns') || '[]');
+            localRuns.forEach(run => {
+              if (!allEntries.some(e => e.timestamp === run.timestamp && e.score === run.score)) {
+                allEntries.push(run);
+              }
+            });
+          } catch (e) {}
+          
           updateList();
         } else {
-          listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">No completed runs recorded yet.</div>`;
+          if (allEntries.length === 0) {
+            listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">No completed runs recorded yet.</div>`;
+          }
         }
       })
       .catch(err => {
-        listEl.innerHTML = `<div style="padding: 16px; text-align: center; color:var(--danger); font-size:11px;">Error loading scores: ${err.message}</div>`;
+        if (allEntries.length === 0) {
+          listEl.innerHTML = `<div style="padding: 16px; text-align: center; color:var(--danger); font-size:11px;">Error loading scores: ${err.message}</div>`;
+        }
       });
   } else {
-    listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">Database offline.</div>`;
+    if (allEntries.length === 0) {
+      listEl.innerHTML = `<div style="padding: 16px; text-align: center; font-style: italic; color:#666; font-size:11px;">Database offline.</div>`;
+    }
   }
 }
 
@@ -1396,6 +1439,26 @@ function openInvestigation(floor, hotspot){
 function renderEnding(){
   const correctCount = Object.values(state.answers).filter(a=>a.correct).length;
   
+  // Save run to local runs history
+  try {
+    const localRuns = JSON.parse(localStorage.getItem('localRuns') || '[]');
+    const newRun = {
+      teamName: state.teamName || 'The Inspector',
+      teamMembers: state.isSolo ? (state.teamName || 'The Inspector') : (state.teamName || 'The Inspector'),
+      score: correctCount,
+      completed: true,
+      timestamp: new Date().toISOString(),
+      isSolo: state.isSolo
+    };
+    // Avoid duplicates by checking timestamp/name
+    if (!localRuns.some(r => r.timestamp === newRun.timestamp && r.teamName === newRun.teamName)) {
+      localRuns.push(newRun);
+      localStorage.setItem('localRuns', JSON.stringify(localRuns));
+    }
+  } catch (e) {
+    console.error("Error saving run locally:", e);
+  }
+
   if(window.db && window.firebaseRef && window.firebaseUpdate && state.teamKey) {
     const teamRef = window.firebaseRef(window.db, `teams/${state.teamKey}`);
     window.firebaseUpdate(teamRef, {
@@ -1469,6 +1532,12 @@ function renderEnding(){
   renderScoreboard(wrap.querySelector('#endingScoreboard'));
   return wrap;
 }
+
+window.onFirebaseInit = () => {
+  if (state.screen === 'title' || state.screen === 'ending') {
+    render();
+  }
+};
 
 render();
 </script>
