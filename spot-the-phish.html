@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spot the Phish — Case Files</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0F1C;
+    --panel:#121A2C;
+    --chrome:#1A2338;
+    --field:#0F1626;
+    --line:#263149;
+    --text:#EDF1F9;
+    --muted:#8A97AC;
+    --faint:#5C6A82;
+    --amber:#E8A33D;
+    --green:#35C48C;
+    --red:#FF5A5F;
+    --blue:#5B8CFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(91,140,255,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(232,163,61,0.07), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:28px 18px 90px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001s !important; transition-duration:0.001s !important;}
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  .topbar{
+    display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    padding-bottom:20px; margin-bottom:22px; border-bottom:1px solid var(--line);
+  }
+  .brandmark{display:flex; align-items:center; gap:12px;}
+  .brandmark .glyph{
+    width:40px;height:40px;border:2px solid var(--amber);border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--amber);font-size:13px;
+    transform:rotate(-4deg);
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(22px,3.4vw,30px);
+    margin:0; letter-spacing:0.01em;
+  }
+  .tagline{color:var(--muted); font-size:13px; margin-top:2px; font-family:'JetBrains Mono',monospace;}
+  .stats{display:flex; gap:22px;}
+  .stat{text-align:right;}
+  .stat .num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px;}
+  .stat .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em;}
+  .stat.streak .num{color:var(--amber);}
+
+  .progress{display:flex; gap:6px; margin-bottom:26px;}
+  .progress .dot{
+    flex:1; height:5px; border-radius:3px; background:var(--line); position:relative; overflow:hidden;
+  }
+  .progress .dot.done{background:var(--green);}
+  .progress .dot.current{background:var(--line);}
+  .progress .dot.current::after{
+    content:""; position:absolute; inset:0; background:var(--amber); width:45%;
+  }
+
+  /* ---------- Case header ---------- */
+  .case-head{margin-bottom:20px;}
+  .case-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--amber);
+    text-transform:uppercase; letter-spacing:0.1em; display:flex; gap:10px; align-items:center;
+  }
+  .case-eyebrow .diff{
+    background:rgba(232,163,61,0.12); border:1px solid rgba(232,163,61,0.4); color:var(--amber);
+    padding:2px 8px; border-radius:20px; font-size:10.5px;
+  }
+  .case-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(19px,2.6vw,25px); margin:6px 0 6px;}
+  .case-brief{color:var(--muted); font-size:14.5px; max-width:640px; line-height:1.5;}
+  .prompt{
+    margin-top:14px; font-size:14px; font-weight:600; color:var(--text);
+    display:flex; align-items:center; gap:8px;
+  }
+  .prompt::before{content:"›"; color:var(--amber); font-weight:700;}
+
+  /* ---------- Exhibits grid ---------- */
+  .exhibits{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; margin-top:16px;
+  }
+  .exhibit{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden;
+    position:relative; transition:box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .exhibit.pickable{cursor:pointer;}
+  .exhibit.pickable:hover{border-color:var(--blue); transform:translateY(-2px);}
+  .exhibit.pickable:focus-visible{outline:2px solid var(--blue); outline-offset:3px;}
+  .exhibit-tag{
+    position:absolute; top:10px; left:10px; z-index:5;
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+    background:rgba(0,0,0,0.55); border:1px solid var(--line); color:var(--muted);
+    padding:3px 9px; border-radius:20px; letter-spacing:0.05em;
+  }
+  .stamp{
+    position:absolute; top:14px; right:14px; z-index:6;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px;
+    padding:6px 14px; border:3px solid; border-radius:6px; transform:rotate(6deg);
+    letter-spacing:0.06em; opacity:0; pointer-events:none; transition:opacity 0.25s, transform 0.25s;
+    text-transform:uppercase;
+  }
+  .revealed .stamp{opacity:0.92; transform:rotate(6deg) scale(1);}
+  .stamp.phish{color:var(--red); border-color:var(--red); background:rgba(255,90,95,0.08);}
+  .stamp.legit{color:var(--green); border-color:var(--green); background:rgba(53,196,140,0.08); transform:rotate(-5deg);}
+  .revealed .stamp.legit{transform:rotate(-5deg) scale(1);}
+
+  /* mail chrome */
+  .mail{font-size:13.5px;}
+  .mail-head{padding:14px 16px 12px; border-bottom:1px solid var(--line);}
+  .mail-row{display:flex; gap:8px; margin-bottom:4px; align-items:baseline;}
+  .mail-row .k{color:var(--faint); width:44px; flex:none; font-size:11px; text-transform:uppercase; letter-spacing:0.05em;}
+  .mail-row .v{font-family:'JetBrains Mono',monospace; font-size:12.5px; word-break:break-word;}
+  .mail-subject{font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px; margin-top:8px;}
+  .mail-body{padding:16px; line-height:1.6; color:#D7DEEB;}
+  .mail-body p{margin:0 0 12px;}
+  .mail-sig{color:var(--muted); font-size:12.5px; margin-top:4px;}
+  .mail-footer{padding:10px 16px; border-top:1px solid var(--line); font-size:11px; color:var(--faint);}
+  .cta-btn{
+    display:inline-block; margin:6px 0 10px; padding:9px 18px; border-radius:6px;
+    font-weight:600; font-size:13px; text-decoration:none; cursor:pointer; border:none; font-family:inherit;
+  }
+  .cta-btn.calm{background:var(--field); border:1px solid var(--line); color:var(--text);}
+  .cta-btn.urgent{background:var(--red); color:#fff;}
+  .details-toggle{
+    background:none; border:none; color:var(--blue); font-size:11px; cursor:pointer; font-family:'JetBrains Mono',monospace;
+    padding:0; margin-top:4px;
+  }
+  .header-details{display:none; margin-top:6px; padding-top:6px; border-top:1px dashed var(--line);}
+  .header-details.open{display:block;}
+  .logo-chip{
+    display:inline-flex; align-items:center; gap:6px; font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:13px; padding:4px 4px 4px 0;
+  }
+  .logo-chip .mark{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;}
+
+  /* browser chrome */
+  .browser-bar{
+    display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--chrome);
+    border-bottom:1px solid var(--line);
+  }
+  .browser-dots{display:flex; gap:5px;}
+  .browser-dots span{width:8px;height:8px;border-radius:50%;background:#3A4560;}
+  .addr{
+    flex:1; background:var(--field); border:1px solid var(--line); border-radius:20px;
+    padding:6px 12px; font-family:'JetBrains Mono',monospace; font-size:12px; display:flex; align-items:center; gap:6px;
+    overflow:hidden;
+  }
+  .addr .url{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .lock{flex:none; cursor:help; font-size:12px;}
+  .login-stage{padding:34px 20px; display:flex; flex-direction:column; align-items:center; background:radial-gradient(ellipse at 50% 0%, rgba(91,140,255,0.06), transparent 60%);}
+  .login-card{background:var(--field); border:1px solid var(--line); border-radius:10px; padding:22px; width:100%; max-width:280px;}
+  .login-card h3{font-family:'Space Grotesk',sans-serif; font-size:15px; margin:10px 0 16px; text-align:center;}
+  .login-field{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:9px 10px;
+    font-size:12.5px; color:var(--muted); margin-bottom:9px;
+  }
+  .login-submit{width:100%; padding:10px; border-radius:6px; border:none; background:var(--blue); color:#fff; font-weight:600; font-size:13px; cursor:default; margin-top:4px;}
+  .login-foot{text-align:center; font-size:11px; color:var(--faint); margin-top:12px;}
+  .cert-tip{
+    display:none; position:absolute; z-index:9; background:#000; border:1px solid var(--line); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px 10px; border-radius:6px; top:38px; left:70px;
+    max-width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  }
+  .lock.open + .cert-tip, .cert-tip.show{display:block;}
+
+  /* tag flags shown on reveal */
+  .tag-el{position:relative;}
+  .revealed .tag-el{
+    outline:2px dashed var(--red); outline-offset:2px; background:rgba(255,90,95,0.10); border-radius:3px;
+  }
+  .revealed .tag-el::before{
+    content: attr(data-tag); position:absolute; top:-11px; left:-11px; width:18px; height:18px; border-radius:50%;
+    background:var(--red); color:#fff; font:700 10.5px/18px 'JetBrains Mono',monospace; text-align:center; z-index:4;
+  }
+
+  .verdict-row{display:flex; gap:14px; margin-top:18px; flex-wrap:wrap;}
+  .verdict-btn{
+    flex:1; min-width:220px; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    padding:13px; border-radius:9px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px;
+    cursor:pointer; transition:border-color 0.15s, background 0.15s;
+  }
+  .verdict-btn:hover{border-color:var(--amber); background:#161F34;}
+  .verdict-btn:focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
+
+  /* feedback banner */
+  .banner{
+    margin-top:18px; padding:14px 16px; border-radius:10px; font-size:14px; display:flex; gap:10px; align-items:flex-start;
+    border:1px solid; line-height:1.5;
+  }
+  .banner.good{background:rgba(53,196,140,0.08); border-color:rgba(53,196,140,0.4);}
+  .banner.bad{background:rgba(255,90,95,0.08); border-color:rgba(255,90,95,0.4);}
+  .banner b{font-family:'Space Grotesk',sans-serif;}
+
+  /* case notes */
+  .notes{margin-top:18px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px;}
+  .notes h4{margin:0 0 10px; font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--amber);}
+  .notes ol{margin:0; padding-left:0; list-style:none;}
+  .notes li{display:flex; gap:10px; margin-bottom:10px; font-size:13.5px; line-height:1.5; color:#D7DEEB;}
+  .notes li:last-child{margin-bottom:0;}
+  .notes .n{
+    flex:none; width:19px; height:19px; border-radius:50%; background:var(--red); color:#fff;
+    font:700 10.5px/19px 'JetBrains Mono',monospace; text-align:center;
+  }
+
+  /* signals quiz */
+  .signals{margin-top:18px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px;}
+  .signals h4{margin:0 0 4px; font-family:'Space Grotesk',sans-serif; font-size:14px;}
+  .signals .sub{color:var(--muted); font-size:12.5px; margin-bottom:12px;}
+  .sig-item{
+    display:flex; align-items:flex-start; gap:10px; padding:9px 10px; border-radius:7px; cursor:pointer;
+    border:1px solid transparent; margin-bottom:4px; font-size:13.5px;
+  }
+  .sig-item:hover{background:rgba(255,255,255,0.03);}
+  .sig-item input{margin-top:3px; accent-color:var(--blue);}
+  .sig-item.correct{border-color:rgba(53,196,140,0.5); background:rgba(53,196,140,0.06);}
+  .sig-item.incorrect{border-color:rgba(255,90,95,0.5); background:rgba(255,90,95,0.06);}
+  .sig-item .mark-ico{margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:12px; flex:none;}
+  .check-btn{
+    margin-top:12px; background:var(--amber); color:#231604; border:none; padding:10px 20px; border-radius:7px;
+    font-weight:700; font-family:'Space Grotesk',sans-serif; font-size:13.5px; cursor:pointer;
+  }
+  .check-btn:disabled{opacity:0.5; cursor:default;}
+  .next-row{margin-top:20px; display:flex; justify-content:flex-end;}
+  .next-btn{
+    background:var(--blue); color:#fff; border:none; padding:11px 22px; border-radius:8px; font-weight:700;
+    font-family:'Space Grotesk',sans-serif; font-size:14px; cursor:pointer;
+  }
+  .next-btn:hover{filter:brightness(1.08);}
+
+  /* end screen */
+  .end{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:34px 28px; text-align:center;}
+  .end .big{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(26px,5vw,40px); margin:10px 0;}
+  .end .sub{color:var(--muted); font-size:14px; max-width:440px; margin:0 auto 20px;}
+  .tips{text-align:left; max-width:520px; margin:0 auto 24px; background:var(--field); border:1px solid var(--line); border-radius:10px; padding:16px 20px;}
+  .tips h4{margin:0 0 10px; font-family:'Space Grotesk',sans-serif; font-size:13.5px; color:var(--amber);}
+  .tips li{font-size:13px; color:#D7DEEB; margin-bottom:8px; line-height:1.5;}
+
+  /* status bar link inspector */
+  .statusbar{
+    position:fixed; left:0; right:0; bottom:0; background:#05070D; border-top:1px solid var(--line);
+    padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--faint);
+    display:flex; align-items:center; gap:8px; z-index:50; min-height:34px;
+  }
+  .statusbar .ico{color:var(--faint); flex:none;}
+  .statusbar.active{color:var(--amber); border-top-color:rgba(232,163,61,0.5);}
+  .statusbar.active .ico{color:var(--amber);}
+  .mock-link{color:var(--blue); text-decoration:underline; cursor:pointer; text-underline-offset:2px;}
+  .mock-link:focus-visible{outline:2px solid var(--blue); outline-offset:2px;}
+
+  @media (max-width:640px){
+    .stats{gap:14px;}
+    .stat .num{font-size:18px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brandmark">
+      <div class="glyph">MB</div>
+      <div>
+        <h1>Spot the Phish</h1>
+        <div class="tagline">// digital forensics training — case files</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num" id="scoreNum">0</div><div class="lbl">Score</div></div>
+      <div class="stat streak"><div class="num" id="streakNum">0</div><div class="lbl">Streak</div></div>
+      <div class="stat"><div class="num" id="caseNum">1/5</div><div class="lbl">Case</div></div>
+    </div>
+  </header>
+
+  <div class="progress" id="progress"></div>
+
+  <main id="stageRoot"></main>
+</div>
+
+<div class="statusbar" id="statusbar">
+  <span class="ico">🔗</span>
+  <span id="statusText">Hover any link or the address bar to inspect where it really points.</span>
+</div>
+
+<script>
+(function(){
+
+  const LEVELS = [
+    // -------------------- LEVEL 1 --------------------
+    {
+      id:1, type:'email', difficulty:'Easy',
+      title:'The Obvious Alarm',
+      brief:'A bank sends an account alert. So does someone pretending to be that bank. One of these landed in the wrong inbox.',
+      phishSide:'B',
+      A:{
+        brand:'MERIDIAN BANK', mark:'MB', markColor:'#2E5AAC',
+        from:'Meridian Bank Alerts', fromEmail:'alerts@meridianbank.com',
+        to:'sam.oduya@gmail.com', replyTo:'alerts@meridianbank.com',
+        subject:'Your October statement is ready',
+        bodyHtml:`<p>Hi Sam,</p><p>Your October account statement is now available in your Meridian Bank online banking portal.</p>`,
+        cta:{text:'View Statement', href:'https://meridianbank.com/statements', style:'calm'},
+        footer:'Meridian Bank, N.A. · Member FDIC · This is an automated notice, please don\u2019t reply.'
+      },
+      B:{
+        brand:'MERIDIAN BANK', mark:'MB', markColor:'#2E5AAC',
+        from:'Meridian Bank Alerts', fromEmail:'alerts@<span class="tag-el" data-tag="1">meridianbank-secure.com</span>',
+        to:'sam.oduya@gmail.com', replyTo:'support@meridianbank-secure.com',
+        subject:'<span class="tag-el" data-tag="2">URGENT: Verify Your Account NOW or It Will Be Suspended</span>',
+        bodyHtml:`<p><span class="tag-el" data-tag="3">Dear Valued Customer,</span></p><p>We have detected unusual activity. You must <span class="tag-el" data-tag="4">verify you're account immediatly</span> or risk permanent suspension within 24 hours.</p>`,
+        cta:{text:'VERIFY ACCOUNT NOW', href:'https://meridianbank-secure.com/verify-now', style:'urgent', tag:'5'},
+        footer:''
+      },
+      notes:[
+        {n:1, t:'Sender domain adds \u201c-secure\u201d \u2014 the real bank always mails from meridianbank.com, nothing extra.'},
+        {n:2, t:'ALL-CAPS urgency plus a suspension threat is a classic pressure tactic.'},
+        {n:3, t:'\u201cDear Valued Customer\u201d instead of your actual name \u2014 real banks personalize their mail.'},
+        {n:4, t:'\u201cyou\u2019re account\u201d and \u201cimmediatly\u201d \u2014 typos a real bank\u2019s editors would catch.'},
+        {n:5, t:'A shouting red button pushing you to act \u201cNOW\u201d is designed to short-circuit careful thinking.'}
+      ],
+      signals:[
+        {id:'s1', text:'The sender domain isn\u2019t the real company domain', correct:true},
+        {id:'s2', text:'The subject line uses urgent, threatening language', correct:true},
+        {id:'s3', text:'The greeting doesn\u2019t use your name', correct:true},
+        {id:'s4', text:'There are spelling and grammar mistakes in the body', correct:true},
+        {id:'s5', text:'The email contains a clickable button', correct:false},
+        {id:'s6', text:'The email was sent on a weekday morning', correct:false}
+      ]
+    },
+
+    // -------------------- LEVEL 2 --------------------
+    {
+      id:2, type:'email', difficulty:'Easy \u2013 Medium',
+      title:'The Shared File',
+      brief:'A cloud storage notice says a coworker shared a spreadsheet. The link text looks right \u2014 but does it go where it says?',
+      phishSide:'A',
+      A:{
+        brand:'NORTHWIND CLOUD', mark:'NC', markColor:'#3E6ED1',
+        markColorTag:'1c',
+        from:'Northwind Cloud', fromEmail:'notifications@<span class="tag-el" data-tag="1">northwind-cloud.net</span>',
+        to:'you@yourcompany.com', replyTo:'notifications@northwind-cloud.net',
+        subject:'Ari Osei shared \u201cQ3 Budget Review.xlsx\u201d with you',
+        bodyHtml:`<p>Hi there,</p><p>Ari Osei has shared a file with you on Northwind Cloud. Open it below to view the spreadsheet.</p><a class="mock-link tag-el" data-tag="2" data-href="https://northwind-files-cloud.ru/login">northwindcloud.com/share/Q3-Budget</a>`,
+        cta:null,
+        footer:'Northwind Cloud Team',
+        logoNote:true
+      },
+      B:{
+        brand:'NORTHWIND CLOUD', mark:'NC', markColor:'#3E6ED1',
+        from:'Northwind Cloud', fromEmail:'notifications@northwindcloud.com',
+        to:'you@yourcompany.com', replyTo:'notifications@northwindcloud.com',
+        subject:'Ari Osei shared \u201cQ3 Budget Review.xlsx\u201d with you',
+        bodyHtml:`<p>Hi there,</p><p>Ari Osei has shared a file with you on Northwind Cloud. Open it below to view the spreadsheet.</p><a class="mock-link" data-href="https://northwindcloud.com/share/Q3-Budget">northwindcloud.com/share/Q3-Budget</a>`,
+        cta:null,
+        footer:'Northwind Cloud \u00b7 You\u2019re receiving this because file-sharing notifications are on. Manage preferences.'
+      },
+      notes:[
+        {n:1, t:'Sender domain is \u201cnorthwind-cloud.net\u201d \u2014 a hyphen and the wrong TLD. The real service sends from northwindcloud.com.'},
+        {n:2, t:'The link text reads \u201cnorthwindcloud.com/\u2026\u201d but hovering it reveals the real destination is a completely different site. Always check where a link actually goes before clicking.'}
+      ],
+      signals:[
+        {id:'s1', text:'The sender domain doesn\u2019t match the real company\u2019s domain', correct:true},
+        {id:'s2', text:'The visible link text doesn\u2019t match where the link actually points', correct:true},
+        {id:'s3', text:'The email names a specific shared file', correct:false},
+        {id:'s4', text:'The email signs off as \u201cthe Team\u201d instead of a person', correct:false}
+      ]
+    },
+
+    // -------------------- LEVEL 3 --------------------
+    {
+      id:3, type:'login', difficulty:'Medium',
+      title:'The Sign-In Page',
+      brief:'Two sign-in pages for the same bank. Both use HTTPS. Both look clean. Read the address bar carefully.',
+      phishSide:'B',
+      A:{
+        url:'meridianbank.com/login', https:true, cert:'meridianbank.com',
+        brand:'Meridian Bank', mark:'MB', markColor:'#2E5AAC',
+        submitText:'Sign In', extraField:null
+      },
+      B:{
+        url:'<span class="tag-el" data-tag="1">meridianbank.com.login-verify.co</span>/secure', https:true, cert:'login-verify.co',
+        brand:'Meridian Bank', mark:'MB', markColor:'#2E5AAC',
+        submitText:'Log In', extraField:'Card Number', extraTag:'4', submitTag:'3'
+      },
+      notes:[
+        {n:1, t:'The URL is meridianbank.com.login-verify.co \u2014 everything before the *last* dot-segment is just a subdomain. The real domain here is login-verify.co, not meridianbank.com.'},
+        {n:2, t:'The padlock is showing on both pages. HTTPS only proves the connection is encrypted \u2014 it says nothing about who owns the site. Attackers buy real certificates too.'},
+        {n:3, t:'Small wording slip: \u201cLog In\u201d instead of the real page\u2019s \u201cSign In.\u201d Copies are rarely word-perfect.'},
+        {n:4, t:'A sign-in form that also asks for your card number is a major red flag \u2014 logging in never requires that.'}
+      ],
+      signals:[
+        {id:'s1', text:'The URL has an extra domain segment tacked on before the real ending', correct:true},
+        {id:'s2', text:'The page uses HTTPS and shows a padlock icon', correct:false},
+        {id:'s3', text:'The button label doesn\u2019t match the real site\u2019s wording', correct:true},
+        {id:'s4', text:'The form asks for a card number just to sign in', correct:true},
+        {id:'s5', text:'The page has a \u201cForgot password\u201d link', correct:false}
+      ]
+    },
+
+    // -------------------- LEVEL 4 --------------------
+    {
+      id:4, type:'email', difficulty:'Medium \u2013 Hard',
+      title:'The Colleague',
+      brief:'A message from a coworker about an unpaid invoice. The name on it is someone you trust. Expand the header details before you decide.',
+      phishSide:'B',
+      A:{
+        brand:'ACME CORP', mark:'AC', markColor:'#4C7A44',
+        from:'Priya Shah', fromEmail:'priya.shah@acmecorp.com',
+        to:'you@acmecorp.com', replyTo:'priya.shah@acmecorp.com',
+        subject:'Re: Vendor invoice \u2014 need your approval',
+        bodyHtml:`<p>Hey,</p><p>Can you approve the Lindqvist Supplies invoice when you get a sec? It\u2019s in the usual folder.</p><p>Thanks!</p>`,
+        cta:null, footer:'', sig:'Priya'
+      },
+      B:{
+        brand:'ACME CORP', mark:'AC', markColor:'#4C7A44',
+        from:'Priya Shah', fromEmail:'priya.shah@<span class="tag-el" data-tag="1">acmecorp.co</span>',
+        to:'you@acmecorp.com', replyTo:'<span class="tag-el" data-tag="2">p.finance.ops@mailrelay-corp.com</span>',
+        subject:'Re: Vendor invoice \u2014 need your approval today',
+        bodyHtml:`<p>Hey,</p><p>Finance flagged the Lindqvist Supplies invoice \u2014 <span class="tag-el" data-tag="3">their bank details changed, can you approve the wire to the new account before end of day?</span> Details attached.</p><p>Thanks!</p>`,
+        cta:null, footer:'', sig:'Priya', sigTag:'4'
+      },
+      notes:[
+        {n:1, t:'The sender address is priya.shah@acmecorp.co \u2014 missing the \u201cm.\u201d The real company domain is acmecorp.com.'},
+        {n:2, t:'Expanding the header details shows Reply-To pointing to a totally different address \u2014 any reply would go straight to the attacker, not Priya.'},
+        {n:3, t:'A request to change bank/payment details over email, under time pressure, is a textbook business-email-compromise move.'},
+        {n:4, t:'The sign-off spacing is slightly off from Priya\u2019s usual message \u2014 a small tell that\u2019s easy to miss on a phone.'}
+      ],
+      signals:[
+        {id:'s1', text:'The sender\u2019s email address is one character off from the real domain', correct:true},
+        {id:'s2', text:'The Reply-To address is different from the From address', correct:true},
+        {id:'s3', text:'The message asks to change payment/bank details under time pressure', correct:true},
+        {id:'s4', text:'The email is a reply within an existing thread', correct:false},
+        {id:'s5', text:'The message is short and casual in tone', correct:false}
+      ]
+    },
+
+    // -------------------- LEVEL 5 --------------------
+    {
+      id:5, type:'login', difficulty:'Hard',
+      title:'The Perfect Copy',
+      brief:'Same layout. Same colors. Same everything \u2014 almost. This is the one where you have to read every character of the address bar, and check the padlock.',
+      phishSide:'A',
+      A:{
+        url:'<span class="tag-el" data-tag="1">rneridianbank.com</span>', https:true, cert:'<span class="tag-el" data-tag="2">rneridianbank.com</span>',
+        brand:'Meridian Bank', mark:'MB', markColor:'#2E5AAC', submitText:'Sign In', extraField:null
+      },
+      B:{
+        url:'meridianbank.com', https:true, cert:'meridianbank.com',
+        brand:'Meridian Bank', mark:'MB', markColor:'#2E5AAC', submitText:'Sign In', extraField:null
+      },
+      notes:[
+        {n:1, t:'Look closely: \u201crneridianbank.com\u201d \u2014 that\u2019s \u201cr\u201d + \u201cn\u201d standing in for the letter \u201cm.\u201d A classic homoglyph trick that\u2019s easy to miss at a glance, especially in a narrow address bar font.'},
+        {n:2, t:'Clicking the padlock shows the certificate is issued to rneridianbank.com, not meridianbank.com. The certificate never lies about the real domain, even when the visual trick fools your eyes.'}
+      ],
+      signals:[
+        {id:'s1', text:'The domain uses \u201crn\u201d to visually imitate the letter \u201cm\u201d', correct:true},
+        {id:'s2', text:'The certificate details show a domain that doesn\u2019t match what you\u2019d expect', correct:true},
+        {id:'s3', text:'The page design and colors are pixel-identical to the real one', correct:false},
+        {id:'s4', text:'The page uses HTTPS', correct:false}
+      ]
+    }
+  ];
+
+  const MAX_PER_LEVEL = 25; // 15 for correct pick + 10 for perfect signal read
+  const state = {
+    idx:0, phase:'choose', chosenSide:null, score:0, streak:0,
+    signalChecked:{}, signalSubmitted:false
+  };
+
+  const root = document.getElementById('stageRoot');
+  const statusbar = document.getElementById('statusbar');
+  const statusText = document.getElementById('statusText');
+
+  function esc(s){ return s; } // content is author-authoritative mock data
+
+  function initials(name){ return name; }
+
+  function renderProgress(){
+    const p = document.getElementById('progress');
+    p.innerHTML = LEVELS.map((lv,i)=>{
+      let cls = 'dot';
+      if(i < state.idx) cls += ' done';
+      else if(i === state.idx) cls += ' current';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+  }
+
+  function setStatus(text, active){
+    statusText.textContent = text;
+    statusbar.classList.toggle('active', !!active);
+  }
+
+  function attachLinkInspectors(container){
+    container.querySelectorAll('.mock-link, .addr').forEach(el=>{
+      const href = el.getAttribute('data-href');
+      if(!href) return;
+      el.addEventListener('mouseenter', ()=> setStatus('Actually points to: ' + href, true));
+      el.addEventListener('focus', ()=> setStatus('Actually points to: ' + href, true));
+      el.addEventListener('mouseleave', ()=> setStatus('Hover any link or the address bar to inspect where it really points.', false));
+      el.addEventListener('blur', ()=> setStatus('Hover any link or the address bar to inspect where it really points.', false));
+      el.addEventListener('click', e=> e.preventDefault());
+      el.setAttribute('tabindex','0');
+    });
+  }
+
+  function mailChrome(ex, side, phishSide, phase){
+    const showDetails = phase !== 'choose';
+    const tagStyle = ex.markColor;
+    let html = `<div class="mail">
+      <div class="mail-head">
+        <div class="logo-chip"><span class="mark" style="background:${tagStyle}">${ex.mark}</span>${ex.brand}</div>
+        <div class="mail-row"><span class="k">From</span><span class="v">${ex.from} &lt;${ex.fromEmail}&gt;</span></div>
+        <div class="mail-row"><span class="k">To</span><span class="v">${ex.to}</span></div>
+        <button type="button" class="details-toggle" data-details-toggle>Show header details \u25be</button>
+        <div class="header-details" data-details>
+          <div class="mail-row"><span class="k">Reply-To</span><span class="v">${ex.replyTo}</span></div>
+        </div>
+        <div class="mail-subject">${ex.subject}</div>
+      </div>
+      <div class="mail-body">${ex.bodyHtml}`;
+    if(ex.cta){
+      html += `<div><a class="cta-btn ${ex.cta.style}${ex.cta.tag ? ' tag-el' : ''}" ${ex.cta.tag ? `data-tag="${ex.cta.tag}"` : ''} data-href="${ex.cta.href}" href="#">${ex.cta.text}</a></div>`;
+    }
+    if(ex.sig){
+      html += `<div class="mail-sig${ex.sigTag ? ' tag-el' : ''}" ${ex.sigTag ? `data-tag="${ex.sigTag}"` : ''}>\u2014 ${ex.sig}</div>`;
+    }
+    html += `</div>`;
+    if(ex.footer){ html += `<div class="mail-footer">${ex.footer}</div>`; }
+    html += `</div>`;
+    return html;
+  }
+
+  function loginChrome(ex){
+    let html = `
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="addr" data-href="Certificate issued to: ${ex.cert}">
+          <span class="lock" data-lock title="Click to inspect certificate">${ex.https ? '\uD83D\uDD12' : '\u26A0\uFE0F'}</span>
+          <span class="url">https://${ex.url}</span>
+        </div>
+      </div>
+      <div class="login-stage">
+        <div class="login-card">
+          <div class="logo-chip" style="justify-content:center;width:100%"><span class="mark" style="background:${ex.markColor}">${ex.mark}</span>${ex.brand}</div>
+          <h3>Sign in to your account</h3>
+          <div class="login-field">you@email.com</div>
+          <div class="login-field">\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022</div>
+          ${ex.extraField ? `<div class="login-field${ex.extraTag ? ' tag-el' : ''}" ${ex.extraTag ? `data-tag="${ex.extraTag}"`:''}>${ex.extraField}</div>` : ''}
+          <button class="login-submit${ex.submitTag ? ' tag-el' : ''}" ${ex.submitTag ? `data-tag="${ex.submitTag}"`:''} type="button">${ex.submitText}</button>
+          <div class="login-foot">Forgot password?</div>
+        </div>
+      </div>`;
+    return html;
+  }
+
+  function renderExhibitInner(level, side, phase){
+    const ex = level[side];
+    if(level.type === 'email') return mailChrome(ex, side, level.phishSide, phase);
+    return loginChrome(ex);
+  }
+
+  function render(){
+    renderProgress();
+    document.getElementById('scoreNum').textContent = state.score;
+    document.getElementById('streakNum').textContent = state.streak;
+    document.getElementById('caseNum').textContent = Math.min(state.idx+1, LEVELS.length) + '/' + LEVELS.length;
+
+    if(state.idx >= LEVELS.length){ renderEnd(); return; }
+    const level = LEVELS[state.idx];
+    const revealed = state.phase === 'revealed';
+
+    let html = `
+      <div class="case-head">
+        <div class="case-eyebrow">CASE 0${level.id} <span class="diff">${level.difficulty}</span></div>
+        <div class="case-title">${level.title}</div>
+        <div class="case-brief">${level.brief}</div>
+        <div class="prompt">${revealed ? 'Review the marked evidence below.' : 'Which exhibit is the phishing attempt?'}</div>
+      </div>
+      <div class="exhibits ${revealed ? 'revealed' : ''}" id="exhibits">
+        ${['A','B'].map(side => `
+          <div class="exhibit ${revealed ? '' : 'pickable'}" data-side="${side}" tabindex="${revealed?'-1':'0'}" role="${revealed?'group':'button'}" aria-label="Exhibit ${side}">
+            <div class="exhibit-tag">EXHIBIT ${side}</div>
+            <div class="stamp ${level.phishSide===side ? 'phish':'legit'}">${level.phishSide===side ? 'Phish' : 'Legitimate'}</div>
+            ${renderExhibitInner(level, side, state.phase)}
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    if(!revealed){
+      html += `<div class="verdict-row">
+        <button class="verdict-btn" data-pick="A">Exhibit A is the phish \u2192</button>
+        <button class="verdict-btn" data-pick="B">Exhibit B is the phish \u2192</button>
+      </div>`;
+    } else {
+      const correct = state.chosenSide === level.phishSide;
+      html += `<div class="banner ${correct ? 'good':'bad'}">
+        <div>${correct ? '\u2713' : '\u2717'}</div>
+        <div><b>${correct ? 'Correct.' : 'Not quite.'}</b> Exhibit ${level.phishSide} was the phish${correct ? '' : ` \u2014 you picked ${state.chosenSide}`}. The flagged details below are why.</div>
+      </div>`;
+
+      html += `<div class="notes"><h4>Case notes</h4><ol>
+        ${level.notes.map(n=>`<li><span class="n">${n.n}</span><span>${n.t}</span></li>`).join('')}
+      </ol></div>`;
+
+      html += `<div class="signals">
+        <h4>What tipped you off?</h4>
+        <div class="sub">Select every signal that\u2019s actually present in this case, then check your answers.</div>
+        <div id="sigList">
+        ${level.signals.map(s=>`
+          <label class="sig-item" data-sig="${s.id}">
+            <input type="checkbox" ${state.signalSubmitted ? 'disabled' : ''} data-sig-input="${s.id}">
+            <span>${s.text}</span>
+            <span class="mark-ico" data-sig-mark></span>
+          </label>
+        `).join('')}
+        </div>
+        <button class="check-btn" id="checkBtn" ${state.signalSubmitted ? 'disabled':''}>${state.signalSubmitted ? 'Answers checked' : 'Check answers'}</button>
+      </div>`;
+
+      if(state.signalSubmitted){
+        html += `<div class="next-row"><button class="next-btn" id="nextBtn">${state.idx === LEVELS.length-1 ? 'See case summary \u2192' : 'Next case \u2192'}</button></div>`;
+      }
+    }
+
+    root.innerHTML = html;
+    wireEvents(level);
+  }
+
+  function wireEvents(level){
+    if(state.phase === 'choose'){
+      root.querySelectorAll('.exhibit.pickable').forEach(el=>{
+        el.addEventListener('click', ()=> pick(el.getAttribute('data-side')));
+        el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(el.getAttribute('data-side')); } });
+      });
+      root.querySelectorAll('[data-pick]').forEach(btn=>{
+        btn.addEventListener('click', e=>{ e.stopPropagation(); pick(btn.getAttribute('data-pick')); });
+      });
+    } else {
+      // header detail toggles
+      root.querySelectorAll('[data-details-toggle]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const panel = btn.parentElement.querySelector('[data-details]');
+          panel.classList.toggle('open');
+        });
+      });
+      // cert / lock tooltip via status bar (reusing link inspector)
+      attachLinkInspectors(root);
+      root.querySelectorAll('[data-lock]').forEach(lock=>{
+        lock.addEventListener('click', ()=>{
+          const addr = lock.closest('.addr');
+          setStatus(addr.getAttribute('data-href'), true);
+        });
+      });
+
+      if(!state.signalSubmitted){
+        const checkBtn = document.getElementById('checkBtn');
+        checkBtn.addEventListener('click', ()=> submitSignals(level));
+      } else {
+        const nextBtn = document.getElementById('nextBtn');
+        if(nextBtn) nextBtn.addEventListener('click', nextCase);
+      }
+    }
+  }
+
+  function pick(side){
+    state.chosenSide = side;
+    state.phase = 'revealed';
+    state.signalChecked = {};
+    state.signalSubmitted = false;
+    const level = LEVELS[state.idx];
+    if(side === level.phishSide){
+      state.score += 15;
+      state.streak += 1;
+    } else {
+      state.streak = 0;
+    }
+    render();
+  }
+
+  function submitSignals(level){
+    const inputs = root.querySelectorAll('[data-sig-input]');
+    let correctCount = 0;
+    inputs.forEach(inp=>{
+      const id = inp.getAttribute('data-sig-input');
+      const sig = level.signals.find(s=>s.id===id);
+      const checked = inp.checked;
+      const item = root.querySelector(`.sig-item[data-sig="${id}"]`);
+      const markEl = item.querySelector('[data-sig-mark]');
+      const isRight = checked === sig.correct;
+      if(isRight) correctCount++;
+      item.classList.add(isRight ? 'correct' : 'incorrect');
+      markEl.textContent = isRight ? '\u2713' : (sig.correct ? 'missed' : '\u2717');
+    });
+    const pct = correctCount / level.signals.length;
+    state.score += Math.round(pct * 10);
+    state.signalSubmitted = true;
+    render();
+  }
+
+  function nextCase(){
+    state.idx += 1;
+    state.phase = 'choose';
+    state.chosenSide = null;
+    state.signalChecked = {};
+    state.signalSubmitted = false;
+    setStatus('Hover any link or the address bar to inspect where it really points.', false);
+    render();
+  }
+
+  function renderEnd(){
+    const maxScore = LEVELS.length * MAX_PER_LEVEL;
+    const pct = Math.round((state.score / maxScore) * 100);
+    let rank = 'Trainee Analyst';
+    if(pct >= 90) rank = 'Senior Threat Analyst';
+    else if(pct >= 70) rank = 'Field Investigator';
+    else if(pct >= 50) rank = 'Junior Analyst';
+
+    root.innerHTML = `
+      <div class="end">
+        <div class="case-eyebrow" style="justify-content:center">CASE FILE CLOSED</div>
+        <div class="big">${state.score} / ${maxScore}</div>
+        <div class="sub">${pct}% accuracy across five cases. Rank earned: <b>${rank}</b>.</div>
+        <div class="tips">
+          <h4>Carry these habits with you</h4>
+          <ul>
+            <li>Read sender domains character by character \u2014 extra words, hyphens, and swapped letters (rn \u2192 m) are the most common tricks.</li>
+            <li>Hover before you click. The visible text of a link never guarantees where it actually goes.</li>
+            <li>A padlock means the connection is encrypted, not that the site is legitimate. Check the certificate\u2019s domain, not just its presence.</li>
+            <li>Expand header details on suspicious mail \u2014 a mismatched Reply-To is one of the clearest tells.</li>
+            <li>Urgency and threats (\u201cact now or else\u201d) are a pressure tactic, not a reason to skip verifying.</li>
+          </ul>
+        </div>
+        <button class="next-btn" id="restartBtn">Investigate again</button>
+      </div>
+    `;
+    document.getElementById('restartBtn').addEventListener('click', ()=>{
+      state.idx = 0; state.phase='choose'; state.chosenSide=null; state.score=0; state.streak=0;
+      state.signalChecked={}; state.signalSubmitted=false;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

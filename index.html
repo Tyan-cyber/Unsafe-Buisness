@@ -505,7 +505,189 @@
   .rank-1 { background: var(--mustard); color: var(--navy); }
   .rank-2 { background: #e0e0e0; color: #111; }
   .rank-3 { background: #cd7f32; color: #fff; }
+
+  /* ---------- SPOT THE PHISH STYLE ---------- */
+  .exhibits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .exhibit {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .exhibit.pickable {
+    cursor: pointer;
+  }
+  .exhibit.pickable:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+    border-color: var(--teal);
+  }
+  .exhibit-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .stamp {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 6;
+    font-family: 'Alfa Slab One', serif;
+    font-size: 14px;
+    padding: 4px 10px;
+    border: 3px solid;
+    border-radius: 4px;
+    transform: rotate(6deg) scale(1.5);
+    letter-spacing: 1px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    text-transform: uppercase;
+  }
+  .revealed .stamp { opacity: 1; transform: rotate(6deg) scale(1); }
+  .stamp.phish { color: var(--danger); border-color: var(--danger); background: rgba(178,59,59,0.1); }
+  .stamp.legit { color: var(--good); border-color: var(--good); background: rgba(63,122,77,0.1); transform: rotate(-5deg) scale(1.5); }
+  .revealed .stamp.legit { transform: rotate(-5deg) scale(1); }
+
+  /* mail chrome */
+  .mail { font-size: 13.5px; font-family: Arial, sans-serif; }
+  .mail-head { padding: 14px 16px 12px; border-bottom: 1px solid #ccc; background: #f9f9f9; }
+  .mail-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: baseline; }
+  .mail-row .k { color: #666; width: 44px; flex: none; font-size: 11px; text-transform: uppercase; font-family: 'Space Mono', monospace; }
+  .mail-row .v { font-family: 'Space Mono', monospace; font-size: 12px; word-break: break-word; color:#333; }
+  .mail-subject { font-weight: bold; font-size: 14.5px; margin-top: 8px; color:#111; }
+  .mail-body { padding: 16px; line-height: 1.6; color: #333; min-height: 150px; }
+  .mail-body p { margin: 0 0 12px; }
+  .mail-sig { color: #555; font-size: 12.5px; margin-top: 4px; }
+  .mail-footer { padding: 10px 16px; border-top: 1px solid #ccc; font-size: 11px; color: #777; background: #f1f1f1; }
+  .cta-btn {
+    display: inline-block; margin: 6px 0 10px; padding: 9px 18px; border-radius: 4px;
+    font-weight: bold; font-size: 13px; text-decoration: none; cursor: pointer; border: none; font-family: inherit;
+  }
+  .cta-btn.calm { background: #e0e0e0; border: 1px solid #999; color: #333; }
+  .cta-btn.urgent { background: var(--danger); color: #fff; }
+  .logo-chip {
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'Alfa Slab One', serif;
+    font-size: 13px; padding: 4px 4px 10px 0; color:#111;
+  }
+  .logo-chip .mark {
+    width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center;
+    justify-content: center; font-size: 11px; color: #fff; font-family:'Space Mono', monospace;
+  }
+
+  /* browser chrome */
+  .browser-bar {
+    display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #e1e1e1;
+    border-bottom: 2px solid var(--ink);
+  }
+  .browser-dots { display: flex; gap: 5px; }
+  .browser-dots span { width: 8px; height: 8px; border-radius: 50%; background: #999; }
+  .addr {
+    flex: 1; background: #fff; border: 1px solid #ccc; border-radius: 20px;
+    padding: 4px 12px; font-family: 'Space Mono', monospace; font-size: 11px; display: flex; align-items: center; gap: 6px;
+    overflow: hidden; color: #333;
+  }
+  .addr .url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lock { flex: none; font-size: 12px; }
+  .login-stage { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; background: #f4f6f8; min-height: 260px; }
+  .login-card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 24px; width: 100%; max-width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .login-card h3 { font-family: 'Alfa Slab One', serif; font-size: 15px; margin: 10px 0 16px; text-align: center; color:#111; }
+  .login-field {
+    background: #f1f3f4; border: 1px solid #ccc; border-radius: 4px; padding: 9px 10px;
+    font-size: 12px; color: #666; margin-bottom: 10px; font-family: sans-serif;
+  }
+  .login-submit { width: 100%; padding: 10px; border-radius: 4px; border: none; background: #005A9E; color: #fff; font-weight: bold; font-size: 13px; margin-top: 4px; }
+  .login-foot { text-align: center; font-size: 11px; color: #777; margin-top: 14px; font-family:sans-serif;}
+
+  .verdict-row { display: flex; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+  .verdict-btn {
+    flex: 1; min-width: 200px; background: var(--wall); border: 2px solid var(--ink); color: var(--ink);
+    padding: 14px; border-radius: 4px; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13px;
+    cursor: pointer; box-shadow: 4px 4px 0 var(--ink); transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .verdict-btn:hover { background: var(--mustard); transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+  .verdict-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+
+  .banner {
+    margin-top: 18px; padding: 14px 16px; border-radius: 4px; font-size: 13px; display: flex; gap: 10px; align-items: flex-start;
+    border: 2px solid var(--ink); line-height: 1.5; font-family: 'Space Mono', monospace;
+  }
+  .banner.good { background: #e6f2e2; color: var(--good); }
+  .banner.bad { background: #f6e3e0; color: var(--danger); }
+
+  /* ---------- MODULE HUB ---------- */
+  .module-card {
+    display: flex;
+    align-items: stretch;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    margin-bottom: 14px;
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    overflow: hidden;
+  }
+  .module-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .module-card:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .module-accent {
+    width: 10px;
+    flex-shrink: 0;
+  }
+  .module-accent.burgundy { background: var(--burgundy); }
+  .module-accent.teal { background: var(--teal); }
+  .module-body {
+    padding: 18px 20px;
+    flex: 1;
+  }
+  .module-title {
+    font-family: 'Alfa Slab One', serif;
+    font-size: 18px;
+    margin: 0 0 6px;
+  }
+  .module-title.burgundy { color: var(--burgundy); }
+  .module-title.teal { color: var(--teal-dark); }
+  .module-tag-line {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #777;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .module-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #3a3a2e;
+    margin: 0;
+  }
+
 </style>
+
 </head>
 <body>
 <div id="app">
@@ -756,17 +938,132 @@ const FLOORS = [
       }
     ]
   }
+
+];
+
+/* ============ SPOT THE PHISH DATA ============ */
+const PHISH_LEVELS = [
+    {
+      id: 1, type: 'email', difficulty: 'Easy',
+      title: 'The Obvious Alarm',
+      brief: 'A bank sends an account alert. So does someone pretending to be that bank. One of these landed in the wrong inbox.',
+      phishSide: 'B',
+      A: {
+        brand: 'MERIDIAN BANK', mark: 'MB', markColor: '#2E5AAC',
+        from: 'Meridian Bank Alerts', fromEmail: 'alerts@meridianbank.com',
+        to: 'sam.oduya@gmail.com', replyTo: 'alerts@meridianbank.com',
+        subject: 'Your October statement is ready',
+        bodyHtml: `<p>Hi Sam,</p><p>Your October account statement is now available in your Meridian Bank online banking portal.</p>`,
+        cta: {text: 'View Statement', href: 'https://meridianbank.com/statements', style: 'calm'},
+        footer: 'Meridian Bank, N.A. · Member FDIC · This is an automated notice, please don\'t reply.'
+      },
+      B: {
+        brand: 'MERIDIAN BANK', mark: 'MB', markColor: '#2E5AAC',
+        from: 'Meridian Bank Alerts', fromEmail: 'alerts@meridianbank-secure.com',
+        to: 'sam.oduya@gmail.com', replyTo: 'support@meridianbank-secure.com',
+        subject: 'URGENT: Verify Your Account NOW or It Will Be Suspended',
+        bodyHtml: `<p>Dear Valued Customer,</p><p>We have detected unusual activity. You must verify you're account immediatly or risk permanent suspension within 24 hours.</p>`,
+        cta: {text: 'VERIFY ACCOUNT NOW', href: 'https://meridianbank-secure.com/verify-now', style: 'urgent'},
+        footer: ''
+      }
+    },
+    {
+      id: 2, type: 'email', difficulty: 'Easy - Medium',
+      title: 'The Shared File',
+      brief: 'A cloud storage notice says a coworker shared a spreadsheet. The link text looks right - but does it go where it says?',
+      phishSide: 'A',
+      A: {
+        brand: 'NORTHWIND CLOUD', mark: 'NC', markColor: '#3E6ED1',
+        from: 'Northwind Cloud', fromEmail: 'notifications@northwind-cloud.net',
+        to: 'you@yourcompany.com', replyTo: 'notifications@northwind-cloud.net',
+        subject: 'Ari Osei shared "Q3 Budget Review.xlsx" with you',
+        bodyHtml: `<p>Hi there,</p><p>Ari Osei has shared a file with you on Northwind Cloud. Open it below to view the spreadsheet.</p><div style="font-family:'Space Mono'; margin-top:10px; color:var(--teal); text-decoration:underline;">northwindcloud.com/share/Q3-Budget</div><div style="font-size:10px; color:#999; margin-top:2px;">(Actually points to: https://northwind-files-cloud.ru/login)</div>`,
+        cta: null,
+        footer: 'Northwind Cloud Team'
+      },
+      B: {
+        brand: 'NORTHWIND CLOUD', mark: 'NC', markColor: '#3E6ED1',
+        from: 'Northwind Cloud', fromEmail: 'notifications@northwindcloud.com',
+        to: 'you@yourcompany.com', replyTo: 'notifications@northwindcloud.com',
+        subject: 'Ari Osei shared "Q3 Budget Review.xlsx" with you',
+        bodyHtml: `<p>Hi there,</p><p>Ari Osei has shared a file with you on Northwind Cloud. Open it below to view the spreadsheet.</p><div style="font-family:'Space Mono'; margin-top:10px; color:var(--teal); text-decoration:underline;">northwindcloud.com/share/Q3-Budget</div><div style="font-size:10px; color:#999; margin-top:2px;">(Actually points to: https://northwindcloud.com/share/Q3-Budget)</div>`,
+        cta: null,
+        footer: 'Northwind Cloud · You\'re receiving this because file-sharing notifications are on. Manage preferences.'
+      }
+    },
+    {
+      id: 3, type: 'login', difficulty: 'Medium',
+      title: 'The Sign-In Page',
+      brief: 'Two sign-in pages for the same bank. Both use HTTPS. Both look clean. Read the address bar carefully.',
+      phishSide: 'B',
+      A: {
+        url: 'meridianbank.com/login', https: true,
+        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC',
+        submitText: 'Sign In', extraField: null
+      },
+      B: {
+        url: 'meridianbank.com.login-verify.co/secure', https: true,
+        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC',
+        submitText: 'Log In', extraField: 'Card Number'
+      }
+    },
+    {
+      id: 4, type: 'email', difficulty: 'Medium - Hard',
+      title: 'The Colleague',
+      brief: 'A message from a coworker about an unpaid invoice. The name on it is someone you trust.',
+      phishSide: 'B',
+      A: {
+        brand: 'ACME CORP', mark: 'AC', markColor: '#4C7A44',
+        from: 'Priya Shah', fromEmail: 'priya.shah@acmecorp.com',
+        to: 'you@acmecorp.com', replyTo: 'priya.shah@acmecorp.com',
+        subject: 'Re: Vendor invoice - need your approval',
+        bodyHtml: `<p>Hey,</p><p>Can you approve the Lindqvist Supplies invoice when you get a sec? It's in the usual folder.</p><p>Thanks!</p>`,
+        cta: null, footer: '', sig: 'Priya'
+      },
+      B: {
+        brand: 'ACME CORP', mark: 'AC', markColor: '#4C7A44',
+        from: 'Priya Shah', fromEmail: 'priya.shah@acmecorp.co',
+        to: 'you@acmecorp.com', replyTo: 'p.finance.ops@mailrelay-corp.com',
+        subject: 'Re: Vendor invoice - need your approval today',
+        bodyHtml: `<p>Hey,</p><p>Finance flagged the Lindqvist Supplies invoice - their bank details changed, can you approve the wire to the new account before end of day? Details attached.</p><p>Thanks!</p>`,
+        cta: null, footer: '', sig: 'Priya'
+      }
+    },
+    {
+      id: 5, type: 'login', difficulty: 'Hard',
+      title: 'The Perfect Copy',
+      brief: 'Same layout. Same colors. Same everything - almost. This is the one where you have to read every character of the address bar.',
+      phishSide: 'A',
+      A: {
+        url: 'rneridianbank.com', https: true,
+        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC', submitText: 'Sign In', extraField: null
+      },
+      B: {
+        url: 'meridianbank.com', https: true,
+        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC', submitText: 'Sign In', extraField: null
+      }
+    }
 ];
 
 /* ============ STATE ============ */
+
 let state = {
-  screen:"title", // title | lobby | floor | ending
+  screen:"hub", // hub | title | registration | lobby | floor | ending | phish | phishRegistration | phishEnding
   currentFloor:1,
   resolved:{}, // hotspotId: true (indicates answered)
   answers:{},  // hotspotId: { correct: boolean, choiceText: string, feedback: string }
   teamKey: null,
   isSolo: true,
-  teamName: ""
+  teamName: "",
+  
+  // Spot the Phish state
+  phishLevel: 0,
+  phishPhase: "choose", // choose | revealed
+  phishChosenSide: null,
+  phishScore: 0,
+  phishTeamKey: null,
+  phishIsSolo: true,
+  phishTeamName: ""
 };
 
 function totalHotspots(){ return FLOORS.reduce((n,f)=>n+f.hotspots.length,0); }
@@ -945,17 +1242,64 @@ const stage = document.getElementById('stage');
 
 function render(){
   stage.innerHTML = "";
-  if(state.screen==="title") stage.appendChild(renderTitle());
+  if(state.screen==="hub") stage.appendChild(renderHub());
+  else if(state.screen==="title") stage.appendChild(renderTitle());
   else if(state.screen==="registration") stage.appendChild(renderRegistration());
   else if(state.screen==="lobby") stage.appendChild(renderLobby());
   else if(state.screen==="floor") stage.appendChild(renderFloor());
   else if(state.screen==="ending") stage.appendChild(renderEnding());
+  else if(state.screen==="phish") stage.appendChild(renderPhish());
+  else if(state.screen==="phishRegistration") stage.appendChild(renderPhishRegistration());
+  else if(state.screen==="phishEnding") stage.appendChild(renderPhishEnding());
 }
 
 function el(html){
   const d=document.createElement('div');
   d.innerHTML=html.trim();
   return d.firstElementChild;
+}
+
+function renderHub(){
+  const wrap = el(`
+    <div class="crt-frame">
+      <div class="crt-inner">
+        <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        <div class="marquee">
+          <h1>CyberWare HQ</h1>
+          <div class="sub">CHOOSE YOUR TRAINING MODULE</div>
+        </div>
+        <div style="padding: 28px 24px; background: var(--wall);">
+          <p style="text-align:center; font-family:'Space Mono',monospace; font-size:13px; max-width:520px; margin: 0 auto 28px; line-height:1.7; color:#3a3a2e;">
+            Select a cybersecurity training game below. Each module tests a different set of real-world skills.
+          </p>
+          <div class="module-card" id="hubUB">
+            <div class="module-accent burgundy"></div>
+            <div class="module-body">
+              <div class="module-title burgundy">UNSAFE Business Inc.</div>
+              <div class="module-tag-line">5 FLOORS · 15 INCIDENTS · SCENE INVESTIGATION</div>
+              <p class="module-desc">Explore five departments of a fictional company, find the bad security habits, and choose the right fixes.</p>
+            </div>
+          </div>
+          <div class="module-card" id="hubPhish">
+            <div class="module-accent teal"></div>
+            <div class="module-body">
+              <div class="module-title teal">Spot the Phish</div>
+              <div class="module-tag-line">5 CASES · EMAILS & LOGIN PAGES · FORENSIC ANALYSIS</div>
+              <p class="module-desc">Examine side-by-side email and login page exhibits. Identify the phishing attempt and explain the signals that gave it away.</p>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 24px 24px; background:var(--wall);">
+          <div id="hubPhishScoreboard"></div>
+        </div>
+        <div class="timestamp">CAM 01 — MAIN LOBBY</div>
+      </div>
+    </div>
+  `);
+  wrap.querySelector('#hubUB').onclick = ()=>{ state.screen="registration"; render(); };
+  renderPhishScoreboard(wrap.querySelector('#hubPhishScoreboard'));
+  wrap.querySelector('#hubPhish').onclick = ()=>{ state.screen="phishRegistration"; render(); };
+  return wrap;
 }
 
 function renderTitle(){
@@ -976,8 +1320,9 @@ function renderTitle(){
             <div><b>YOUR ROLE:</b> Cybersecurity Inspector</div>
             <div><b>MISSION:</b> Investigate every floor, spot the unsafe practice, and choose the right fix.</div>
           </div>
-          <div style="margin-bottom: 24px;">
+          <div style="margin-bottom: 24px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
             <button class="btn" id="startBtn">Begin Inspection</button>
+            <button class="btn secondary" id="startPhishBtn">Play: Spot the Phish</button>
           </div>
           <div id="titleScoreboard"></div>
         </div>
@@ -986,6 +1331,7 @@ function renderTitle(){
     </div>
   `);
   wrap.querySelector('#startBtn').onclick = ()=>{ state.screen="registration"; render(); };
+  wrap.querySelector('#startPhishBtn').onclick = ()=>{ state.screen="phish"; state.phishLevel=0; state.phishPhase="choose"; state.phishChosenSide=null; render(); };
   renderScoreboard(wrap.querySelector('#titleScoreboard'));
   return wrap;
 }
@@ -1058,6 +1404,9 @@ function renderRegistration(){
             </div>
           </div>
 
+          <div style="margin-top:16px; text-align:center;">
+            <button class="btn secondary small" id="backToHubFromReg">← Back to Hub</button>
+          </div>
         </div>
         <div class="timestamp">CAM 01 — REGISTRATION</div>
       </div>
@@ -1269,6 +1618,8 @@ function renderRegistration(){
     }
   };
 
+  wrap.querySelector('#backToHubFromReg').onclick = ()=>{ state.screen="hub"; render(); };
+
   return wrap;
 }
 
@@ -1290,6 +1641,9 @@ function renderLobby(){
           <div class="directory">Each floor holds a different department — and a few habits that could get UNSAFE Business Inc. into real trouble. Clear a floor's issues to unlock the next.</div>
           <div class="floor-list" id="floorList"></div>
           ${cleared===FLOORS.length ? '<div style="margin-top:16px; text-align:center;"><button class="btn good" id="finishBtn">View Final Report</button></div>' : ''}
+          <div style="margin-top:12px; text-align:left;">
+            <button class="btn secondary small" id="hubFromLobbyBtn">← Back to Hub</button>
+          </div>
         </div>
         <div class="timestamp">CAM 02 — ELEVATOR LOBBY</div>
       </div>
@@ -1318,6 +1672,7 @@ function renderLobby(){
   });
   const finishBtn = wrap.querySelector('#finishBtn');
   if(finishBtn) finishBtn.onclick = ()=>{ state.screen="ending"; render(); };
+  wrap.querySelector('#hubFromLobbyBtn').onclick = ()=>{ state.screen="hub"; render(); };
   return wrap;
 }
 
@@ -1517,8 +1872,9 @@ function renderEnding(){
 
           <div id="endingScoreboard" style="margin-top: 32px; text-align: left;"></div>
 
-          <div style="margin-top:24px;">
+          <div style="margin-top:24px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
             <button class="btn" id="againBtn">Restart Investigation</button>
+            <button class="btn secondary" id="hubFromEndBtn">← Back to Hub</button>
           </div>
         </div>
         <div class="timestamp">CAM FINAL — DEBRIEF ROOM</div>
@@ -1526,10 +1882,494 @@ function renderEnding(){
     </div>
   `);
   wrap.querySelector('#againBtn').onclick = ()=>{
-    state = { screen:"title", currentFloor:1, resolved:{}, answers:{}, teamKey: null, isSolo: true, teamName: "" };
+    state = { screen:"hub", currentFloor:1, resolved:{}, answers:{}, teamKey: null, isSolo: true, teamName: "", phishLevel:0, phishPhase:"choose", phishChosenSide:null, phishScore:0, phishTeamKey:null, phishIsSolo:true, phishTeamName:"" };
     render();
   };
+  wrap.querySelector('#hubFromEndBtn').onclick = ()=>{ state.screen="hub"; render(); };
   renderScoreboard(wrap.querySelector('#endingScoreboard'));
+  return wrap;
+}
+
+
+
+function renderPhishScoreboard(target) {
+  const container = typeof target === 'string' ? document.getElementById(target) : target;
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="scoreboard-container">
+      <div class="scoreboard-header">
+        <span style="font-family:'Alfa Slab One'; font-size:12px; letter-spacing:1px;">LEADERBOARD — SPOT THE PHISH</span>
+        <span style="font-size:9px; opacity:0.8;">TOP PHISH HUNTERS</span>
+      </div>
+      <div id="phishScoreboardList" style="max-height: 220px; overflow-y: auto; background:#fff;">
+        <div style="padding: 16px; text-align: center; font-style: italic; color:#666;">Loading scores...</div>
+      </div>
+    </div>
+  `;
+
+  const listEl = container.querySelector('#phishScoreboardList');
+
+  function showEntries(entries) {
+    if(!entries || entries.length === 0) {
+      listEl.innerHTML = `<div style="padding:16px; text-align:center; font-style:italic; color:#666; font-size:11px;">No completed runs yet.</div>`;
+      return;
+    }
+    const sorted = [...entries].filter(e => e.phishScore !== undefined).sort((a,b) => (b.phishScore||0) - (a.phishScore||0)).slice(0,10);
+    if(sorted.length === 0) {
+      listEl.innerHTML = `<div style="padding:16px; text-align:center; font-style:italic; color:#666; font-size:11px;">No completed runs yet.</div>`;
+      return;
+    }
+    let html = `<table class="scoreboard-table"><thead><tr>
+      <th style="width:40px;text-align:center;">Rank</th>
+      <th>Name</th>
+      <th style="width:70px;text-align:right;">Score</th>
+    </tr></thead><tbody>`;
+    sorted.forEach((entry, idx) => {
+      const rankClass = idx < 3 ? `rank-${idx+1}` : '';
+      html += `<tr><td style="text-align:center;"><span class="rank-badge ${rankClass}">${idx+1}</span></td>
+        <td style="font-weight:bold;">${entry.phishTeamName || 'Anonymous'}</td>
+        <td style="text-align:right;font-weight:bold;color:var(--teal-dark);">${entry.phishScore}/5</td></tr>`;
+    });
+    html += '</tbody></table>';
+    listEl.innerHTML = html;
+  }
+
+  let localEntries = [];
+  try {
+    localEntries = JSON.parse(localStorage.getItem('phishRuns') || '[]');
+    showEntries(localEntries);
+  } catch(e) {}
+
+  if(window.db && window.firebaseGet && window.firebaseRef) {
+    window.firebaseGet(window.firebaseRef(window.db, 'phish_teams'))
+      .then(snap => {
+        if(snap.exists()) {
+          const entries = Object.values(snap.val()).filter(e => e.phishScore !== undefined);
+          try { localStorage.setItem('phishRuns', JSON.stringify(entries)); } catch(e2) {}
+          showEntries(entries);
+        } else { showEntries(localEntries); }
+      })
+      .catch(() => showEntries(localEntries));
+  }
+}
+
+function renderPhishRegistration(){
+  const wrap = el(`
+    <div class="crt-frame">
+      <div class="crt-inner">
+        <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        <div class="marquee">
+          <h1>Spot the Phish</h1>
+          <div class="sub">CHOOSE YOUR MODE</div>
+        </div>
+        <div class="title-screen" style="text-align:left; max-width:460px; margin:0 auto; padding-top:24px;">
+          <div class="reg-options">
+            <div class="reg-tab active" id="pTabSolo">Play Solo</div>
+            <div class="reg-tab" id="pTabJoin">Join Team</div>
+            <div class="reg-tab" id="pTabCreate">New Team</div>
+          </div>
+
+          <!-- SOLO -->
+          <div class="reg-panel active" id="pPanelSolo">
+            <label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Your Name (Optional)</label>
+            <input type="text" id="pSoloName" placeholder="e.g. Agent Smith" style="width:100%;padding:10px;margin-bottom:12px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:24px;cursor:pointer;font-weight:bold;">
+              <input type="checkbox" id="pSoloAnon" style="width:16px;height:16px;accent-color:var(--mustard);">
+              Play anonymously (don't save to leaderboard)
+            </label>
+            <div style="text-align:center;">
+              <button class="btn" id="pStartSoloBtn">Start Phish Hunt</button>
+            </div>
+          </div>
+
+          <!-- JOIN -->
+          <div class="reg-panel" id="pPanelJoin">
+            <div id="pJoinLoading" style="font-size:13px;margin-bottom:16px;font-style:italic;color:#555;">Connecting to database...</div>
+            <div id="pJoinContent" style="display:none;">
+              <label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Select Team</label>
+              <select id="pJoinSelect" class="select-input"></select>
+              <label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Your Name</label>
+              <input type="text" id="pJoinName" placeholder="e.g. Alice" style="width:100%;padding:10px;margin-bottom:24px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;">
+              <div style="text-align:center;"><button class="btn" id="pSubmitJoinBtn">Join & Start Hunt</button></div>
+            </div>
+          </div>
+
+          <!-- CREATE -->
+          <div class="reg-panel" id="pPanelCreate">
+            <label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Team Name</label>
+            <input type="text" id="pTeamName" placeholder="e.g. The Cyber Sleuths" style="width:100%;padding:10px;margin-bottom:16px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;">
+            <label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Team Members (comma separated)</label>
+            <input type="text" id="pTeamMembers" placeholder="e.g. Alice, Bob, Charlie" style="width:100%;padding:10px;margin-bottom:24px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;">
+            <div style="text-align:center;"><button class="btn" id="pSubmitTeamBtn">Register & Start Hunt</button></div>
+          </div>
+
+          <div style="margin-top:16px; text-align:center;">
+            <button class="btn secondary small" id="pBackBtn">← Back to Hub</button>
+          </div>
+        </div>
+        <div class="timestamp">CAM 01 — PHISH REGISTRATION</div>
+      </div>
+    </div>
+  `);
+
+  const tabs = {
+    Solo: { tab: wrap.querySelector('#pTabSolo'), panel: wrap.querySelector('#pPanelSolo') },
+    Join: { tab: wrap.querySelector('#pTabJoin'), panel: wrap.querySelector('#pPanelJoin') },
+    Create: { tab: wrap.querySelector('#pTabCreate'), panel: wrap.querySelector('#pPanelCreate') }
+  };
+  let activePhishTeams = {};
+
+  function switchPhishTab(key) {
+    Object.keys(tabs).forEach(k => {
+      tabs[k].tab.classList.toggle('active', k===key);
+      tabs[k].panel.classList.toggle('active', k===key);
+    });
+    if(key === 'Join') loadPhishTeams();
+  }
+
+  function startPhishGame() {
+    state.phishLevel = 0;
+    state.phishPhase = 'choose';
+    state.phishChosenSide = null;
+    state.phishScore = 0;
+    state.screen = 'phish';
+    render();
+  }
+
+  function loadPhishTeams() {
+    const loadDiv = wrap.querySelector('#pJoinLoading');
+    const contentDiv = wrap.querySelector('#pJoinContent');
+    const selectEl = wrap.querySelector('#pJoinSelect');
+    if(!window.db || !window.firebaseGet || !window.firebaseRef) {
+      loadDiv.textContent = 'Database offline. Play Solo or create a new team.';
+      return;
+    }
+    window.firebaseGet(window.firebaseRef(window.db, 'phish_teams'))
+      .then(snap => {
+        if(snap.exists()) {
+          activePhishTeams = snap.val();
+          selectEl.innerHTML = '';
+          Object.keys(activePhishTeams).forEach(k => {
+            const opt = document.createElement('option');
+            opt.value = k;
+            opt.textContent = activePhishTeams[k].phishTeamName || 'Unnamed';
+            selectEl.appendChild(opt);
+          });
+          loadDiv.style.display = 'none';
+          contentDiv.style.display = 'block';
+        } else {
+          loadDiv.textContent = 'No active teams found. Create a new one!';
+        }
+      })
+      .catch(err => { loadDiv.textContent = 'Error: ' + err.message; });
+  }
+
+  tabs.Solo.tab.onclick = () => switchPhishTab('Solo');
+  tabs.Join.tab.onclick = () => switchPhishTab('Join');
+  tabs.Create.tab.onclick = () => switchPhishTab('Create');
+
+  wrap.querySelector('#pStartSoloBtn').onclick = () => {
+    const name = wrap.querySelector('#pSoloName').value.trim();
+    const anon = wrap.querySelector('#pSoloAnon').checked;
+    state.phishIsSolo = true;
+    state.phishTeamName = name ? name + ' (Solo)' : 'Anonymous';
+    state.phishTeamKey = null;
+
+    if(!anon && name && window.db && window.firebasePush && window.firebaseRef && window.firebaseSet) {
+      const btn = wrap.querySelector('#pStartSoloBtn');
+      btn.disabled = true; btn.textContent = 'Starting...';
+      const ref = window.firebasePush(window.firebaseRef(window.db, 'phish_teams'));
+      state.phishTeamKey = ref.key;
+      window.firebaseSet(ref, {
+        phishTeamName: state.phishTeamName,
+        phishMembers: name,
+        timestamp: new Date().toISOString(),
+        isSolo: true
+      }).then(() => startPhishGame()).catch(() => startPhishGame());
+    } else {
+      startPhishGame();
+    }
+  };
+
+  wrap.querySelector('#pSubmitJoinBtn').onclick = () => {
+    const key = wrap.querySelector('#pJoinSelect').value;
+    const name = wrap.querySelector('#pJoinName').value.trim();
+    if(!name) { alert('Please enter your name.'); return; }
+    const btn = wrap.querySelector('#pSubmitJoinBtn');
+    btn.disabled = true; btn.textContent = 'Joining...';
+    state.phishTeamKey = key;
+    state.phishIsSolo = false;
+    state.phishTeamName = activePhishTeams[key]?.phishTeamName || 'Team';
+    if(window.db && window.firebaseRef && window.firebaseUpdate) {
+      const cur = activePhishTeams[key]?.phishMembers || '';
+      window.firebaseUpdate(window.firebaseRef(window.db, `phish_teams/${key}`), {
+        phishMembers: cur ? cur + ', ' + name : name
+      }).then(() => startPhishGame()).catch(() => startPhishGame());
+    } else { startPhishGame(); }
+  };
+
+  wrap.querySelector('#pSubmitTeamBtn').onclick = () => {
+    const tName = wrap.querySelector('#pTeamName').value.trim();
+    const tMembers = wrap.querySelector('#pTeamMembers').value.trim();
+    if(!tName || !tMembers) { alert('Please fill in both fields.'); return; }
+    const btn = wrap.querySelector('#pSubmitTeamBtn');
+    btn.disabled = true; btn.textContent = 'Registering...';
+    state.phishIsSolo = false;
+    state.phishTeamName = tName;
+    if(window.db && window.firebasePush && window.firebaseRef && window.firebaseSet) {
+      const ref = window.firebasePush(window.firebaseRef(window.db, 'phish_teams'));
+      state.phishTeamKey = ref.key;
+      window.firebaseSet(ref, {
+        phishTeamName: tName,
+        phishMembers: tMembers,
+        timestamp: new Date().toISOString(),
+        isSolo: false
+      }).then(() => startPhishGame()).catch(err => {
+        alert('Error: ' + err.message);
+        btn.disabled = false; btn.textContent = 'Register & Start Hunt';
+      });
+    } else { startPhishGame(); }
+  };
+
+  wrap.querySelector('#pBackBtn').onclick = () => { state.screen='hub'; render(); };
+  return wrap;
+}
+
+function renderPhishEnding(){
+  const score = state.phishScore;
+  const total = PHISH_LEVELS.length;
+
+  // Save to firebase
+  if(window.db && window.firebaseRef && window.firebaseUpdate && state.phishTeamKey) {
+    window.firebaseUpdate(window.firebaseRef(window.db, `phish_teams/${state.phishTeamKey}`), {
+      phishScore: score,
+      completed: true,
+      timestamp: new Date().toISOString()
+    }).catch(err => console.error('Error saving phish score:', err));
+  }
+  // Save locally
+  try {
+    const runs = JSON.parse(localStorage.getItem('phishRuns') || '[]');
+    runs.push({ phishTeamName: state.phishTeamName, phishScore: score, timestamp: new Date().toISOString() });
+    localStorage.setItem('phishRuns', JSON.stringify(runs));
+  } catch(e) {}
+
+  let rank = 'Trainee Analyst';
+  const pct = (score / total) * 100;
+  if(pct >= 100) rank = 'Senior Threat Analyst';
+  else if(pct >= 80) rank = 'Field Investigator';
+  else if(pct >= 60) rank = 'Junior Analyst';
+
+  const wrap = el(`
+    <div class="crt-frame">
+      <div class="crt-inner">
+        <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        <div class="marquee">
+          <h1 style="font-size:28px;">Phish Hunt Complete</h1>
+          <div class="sub">CASE FILE CLOSED — SPOT THE PHISH</div>
+        </div>
+        <div class="ending">
+          <div class="certificate">
+            <h2>Certificate of Phishing Awareness</h2>
+            <div class="line">Awarded to <b>${state.phishTeamName || 'The Inspector'}</b></div>
+            <div class="line" style="margin:12px 0;">
+              Score: <span style="font-family:'Alfa Slab One';font-size:24px;color:var(--teal-dark);">${score} / ${total}</span> Correct
+            </div>
+            <div class="line">Rank earned: <b>${rank}</b></div>
+            <div class="line sticky">Phish Hunt: COMPLETED ✔</div>
+          </div>
+          <div id="phishEndScoreboard" style="margin-top:28px; text-align:left;"></div>
+          <div style="margin-top:24px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn" id="phishAgainBtn">Play Again</button>
+            <button class="btn secondary" id="phishHubBtn">Back to Hub</button>
+          </div>
+        </div>
+        <div class="timestamp">CAM FINAL — PHISH DEBRIEF</div>
+      </div>
+    </div>
+  `);
+
+  wrap.querySelector('#phishAgainBtn').onclick = () => {
+    state.phishLevel = 0; state.phishPhase = 'choose'; state.phishChosenSide = null; state.phishScore = 0;
+    state.screen = 'phishRegistration'; render();
+  };
+  wrap.querySelector('#phishHubBtn').onclick = () => { state.screen = 'hub'; render(); };
+  renderPhishScoreboard(wrap.querySelector('#phishEndScoreboard'));
+  return wrap;
+}
+
+function mailChrome(ex) {
+    let html = `<div class="mail">
+      <div class="mail-head">
+        <div class="logo-chip"><span class="mark" style="background:${ex.markColor}">${ex.mark}</span>${ex.brand}</div>
+        <div class="mail-row"><span class="k">From</span><span class="v">${ex.from} &lt;${ex.fromEmail}&gt;</span></div>
+        <div class="mail-row"><span class="k">To</span><span class="v">${ex.to}</span></div>
+        <div class="mail-row" style="margin-top:6px; padding-top:6px; border-top:1px dashed #ccc;"><span class="k">Reply-To</span><span class="v">${ex.replyTo}</span></div>
+        <div class="mail-subject">${ex.subject}</div>
+      </div>
+      <div class="mail-body">${ex.bodyHtml}`;
+    if(ex.cta){
+      html += `<div><a class="cta-btn ${ex.cta.style}" href="#">${ex.cta.text}</a></div>`;
+    }
+    if(ex.sig){
+      html += `<div class="mail-sig">— ${ex.sig}</div>`;
+    }
+    html += `</div>`;
+    if(ex.footer){ html += `<div class="mail-footer">${ex.footer}</div>`; }
+    html += `</div>`;
+    return html;
+  }
+
+  function loginChrome(ex) {
+    let html = `
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="addr">
+          <span class="lock">${ex.https ? '🔒' : '⚠️'}</span>
+          <span class="url">https://${ex.url}</span>
+        </div>
+      </div>
+      <div class="login-stage">
+        <div class="login-card">
+          <div class="logo-chip" style="justify-content:center;width:100%"><span class="mark" style="background:${ex.markColor}">${ex.mark}</span>${ex.brand}</div>
+          <h3>Sign in to your account</h3>
+          <div class="login-field">you@email.com</div>
+          <div class="login-field">••••••••••</div>
+          ${ex.extraField ? `<div class="login-field">${ex.extraField}</div>` : ''}
+          <button class="login-submit" type="button">${ex.submitText}</button>
+          <div class="login-foot">Forgot password?</div>
+        </div>
+      </div>`;
+    return html;
+  }
+
+  function renderExhibitInner(level, side) {
+    const ex = level[side];
+    if(level.type === 'email') return mailChrome(ex);
+    return loginChrome(ex);
+  }
+
+function renderPhish() {
+  const levelData = PHISH_LEVELS[state.phishLevel];
+  if (!levelData) {
+    const wrap = el(`
+      <div class="crt-frame">
+        <div class="crt-inner">
+          <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+          <div class="marquee">
+            <h1>Phishing Master</h1>
+            <div class="sub">ALL SIMULATIONS COMPLETED</div>
+          </div>
+          <div style="padding:40px 24px; text-align:center;">
+            <div style="font-size:64px; margin-bottom:16px;">🎣</div>
+            <p style="margin-bottom:24px; font-weight:bold;">Excellent work! You completed all the training cases.</p>
+            <button class="btn" id="backToTitleBtn">Return to Main Menu</button>
+          </div>
+        </div>
+      </div>
+    `);
+    wrap.querySelector('#backToTitleBtn').onclick = () => { state.screen="title"; render(); };
+    return wrap;
+  }
+
+  const revealed = state.phishPhase === 'revealed';
+
+  let html = `
+    <div class="crt-frame">
+      <div class="crt-inner">
+        <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        <div class="scene-header">
+          <div>
+            <h2>Spot the Phish: CASE 0${levelData.id}</h2>
+            <div class="ftag">Difficulty: ${levelData.difficulty}</div>
+          </div>
+          <div class="progress-pill">${state.phishLevel + 1}/${PHISH_LEVELS.length} CASES</div>
+        </div>
+        
+        <div style="padding: 20px; background: var(--wall);">
+          <div style="margin-bottom:16px;">
+            <h3 style="font-family:'Alfa Slab One', serif; font-size:18px; margin:0 0 6px;">${levelData.title}</h3>
+            <p style="margin:0; font-family:'Space Mono', monospace; font-size:12px; color:var(--teal-dark);">${levelData.brief}</p>
+          </div>
+          <div style="font-family:'Space Mono', monospace; font-weight:bold; margin-bottom:10px; color:var(--burgundy);">
+            ${revealed ? 'Review the evidence below.' : 'Which exhibit is the phishing attempt?'}
+          </div>
+          
+          <div class="exhibits ${revealed ? 'revealed' : ''}">
+            ${['A','B'].map(side => `
+              <div class="exhibit ${revealed ? '' : 'pickable'}" data-side="${side}">
+                <div class="exhibit-tag">EXHIBIT ${side}</div>
+                <div class="stamp ${levelData.phishSide===side ? 'phish':'legit'}">${levelData.phishSide===side ? 'Phish' : 'Legitimate'}</div>
+                ${renderExhibitInner(levelData, side)}
+              </div>
+            `).join('')}
+          </div>
+  `;
+
+  if(!revealed) {
+    html += `
+          <div class="verdict-row">
+            <button class="verdict-btn" id="pickA">Exhibit A is the phish →</button>
+            <button class="verdict-btn" id="pickB">Exhibit B is the phish →</button>
+          </div>
+    `;
+  } else {
+    const correct = state.phishChosenSide === levelData.phishSide;
+    html += `
+          <div class="banner ${correct ? 'good':'bad'}">
+            <div style="font-weight:bold;">${correct ? '✔' : '✘'}</div>
+            <div><b>${correct ? 'Correct.' : 'Not quite.'}</b> Exhibit ${levelData.phishSide} was the phish${correct ? '' : ` — you picked ${state.phishChosenSide}`}.</div>
+          </div>
+          <div style="margin-top:20px; text-align:right;">
+            <button class="btn good" id="nextCaseBtn">${state.phishLevel >= PHISH_LEVELS.length - 1 ? 'See Results →' : 'Next Case →'}</button>
+          </div>
+    `;
+  }
+
+  html += `
+          <div style="margin-top:30px; text-align:left;">
+            <button class="btn secondary small" id="quitPhishBtn">Quit to Menu</button>
+          </div>
+        </div>
+        <div class="timestamp">SIMULATION ${state.phishLevel + 1}</div>
+      </div>
+    </div>
+  `;
+
+  const wrap = el(html);
+
+  if(!revealed) {
+    const pick = (side) => {
+      state.phishChosenSide = side;
+      state.phishPhase = 'revealed';
+      if(side === levelData.phishSide) {
+        state.phishScore += 1;
+      }
+      render();
+    };
+    wrap.querySelector('#pickA').onclick = () => pick('A');
+    wrap.querySelector('#pickB').onclick = () => pick('B');
+    wrap.querySelectorAll('.exhibit.pickable').forEach(exh => {
+      exh.onclick = () => pick(exh.getAttribute('data-side'));
+    });
+  } else {
+    wrap.querySelector('#nextCaseBtn').onclick = () => {
+      const isLastCase = state.phishLevel >= PHISH_LEVELS.length - 1;
+      if(isLastCase) {
+        state.screen = 'phishEnding';
+        render();
+      } else {
+        state.phishLevel++;
+        state.phishPhase = 'choose';
+        state.phishChosenSide = null;
+        render();
+      }
+    };
+  }
+  
+  wrap.querySelector('#quitPhishBtn').onclick = () => { state.screen="hub"; render(); };
+
   return wrap;
 }
 
