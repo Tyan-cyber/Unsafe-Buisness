@@ -1,1094 +1,717 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Make Me Secure — CyberWare HQ Password Training</title>
-  <meta name="description"
-    content="A 3-level interactive password security training game. Spot weak passwords, upgrade them, and crack easy ones to see why personal info is dangerous.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Space+Mono:wght@400;700&family=Caveat:wght@600;700&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --wall: #E4D9BE;
-      --wall-dark: #D3C6A2;
-      --tile-a: #C9BFA0;
-      --tile-b: #AFA37F;
-      --teal: #2F6B67;
-      --teal-dark: #1B4643;
-      --burgundy: #8B3A4A;
-      --burgundy-dark: #642A35;
-      --mustard: #D9A441;
-      --mustard-dark: #B4832C;
-      --navy: #232336;
-      --paper: #F4EEDD;
-      --crt-green: #39FF6E;
-      --ink: #232336;
-      --danger: #B23B3B;
-      --good: #3F7A4D;
-      --warn: #C67C00;
-      font-family: 'Space Mono', monospace;
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      background: var(--navy);
-      color: var(--ink);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    #app {
-      position: relative;
-      width: 100%;
-      min-height: 100vh;
-      background:
-        linear-gradient(rgba(35, 35, 54, 0.65), rgba(35, 35, 54, 0.85)),
-        url('./bg.png') center/cover no-repeat fixed;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .stage {
-      width: 100%;
-      max-width: 960px;
-      position: relative;
-    }
-
-    h1,
-    h2,
-    h3 {
-      font-family: 'Alfa Slab One', serif;
-      margin: 0;
-      letter-spacing: 0.5px;
-    }
-
-    /* ---- CRT FRAME ---- */
-    .crt-frame {
-      position: relative;
-      background: #0d1410;
-      border-radius: 10px;
-      padding: 3px;
-      box-shadow: 0 0 0 3px #111, 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 0 30px rgba(0, 0, 0, 0.8);
-    }
-
-    .crt-inner {
-      position: relative;
-      border-radius: 7px;
-      overflow: hidden;
-      background: var(--paper);
-    }
-
-    .crt-inner::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 0px, rgba(0, 0, 0, 0.06) 1px, transparent 2px, transparent 3px);
-      pointer-events: none;
-      mix-blend-mode: multiply;
-      z-index: 5;
-    }
-
-    .crt-inner::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.35);
-      pointer-events: none;
-      z-index: 6;
-    }
-
-    .rec-tag {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      z-index: 8;
-      font-size: 11px;
-      font-weight: 700;
-      color: #ff4d4d;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
-      letter-spacing: 1px;
-    }
-
-    .rec-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ff4d4d;
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      50% {
-        opacity: 0.15;
-      }
-    }
-
-    .timestamp {
-      position: absolute;
-      bottom: 10px;
-      left: 14px;
-      z-index: 8;
-      font-size: 10px;
-      color: rgba(35, 35, 54, 0.55);
-      letter-spacing: 1px;
-    }
-
-    /* ---- MARQUEE ---- */
-    .marquee {
-      background: var(--mustard-dark);
-      color: var(--paper);
-      padding: 22px 16px 18px;
-      border-bottom: 6px solid var(--mustard);
-      margin: -3px -3px 0 -3px;
-      border-radius: 7px 7px 0 0;
-    }
-
-    .marquee h1 {
-      font-size: clamp(24px, 4vw, 40px);
-      color: var(--paper);
-      text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.25);
-    }
-
-    .marquee .sub {
-      font-family: 'Space Mono', monospace;
-      font-size: 13px;
-      letter-spacing: 3px;
-      margin-top: 8px;
-      opacity: 0.9;
-    }
-
-    /* ---- SCENE HEADER ---- */
-    .scene-header {
-      background: var(--mustard-dark);
-      color: var(--paper);
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      border-bottom: 5px solid var(--mustard);
-    }
-
-    .scene-header h2 {
-      font-size: 18px;
-      color: var(--paper);
-    }
-
-    .scene-header .ftag {
-      font-size: 11px;
-      opacity: 0.85;
-    }
-
-    .progress-pill {
-      background: rgba(0, 0, 0, 0.25);
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    /* ---- BUTTONS ---- */
-    .btn {
-      font-family: 'Space Mono', monospace;
-      font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 13px 26px;
-      border: 3px solid var(--ink);
-      border-radius: 4px;
-      cursor: pointer;
-      background: var(--mustard);
-      color: var(--navy);
-      box-shadow: 4px 4px 0 var(--ink);
-      transition: transform .08s ease, box-shadow .08s ease;
-    }
-
-    .btn:hover {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 var(--ink);
-    }
-
-    .btn:active {
-      transform: translate(4px, 4px);
-      box-shadow: 0 0 0 var(--ink);
-    }
-
-    .btn.secondary {
-      background: var(--paper);
-    }
-
-    .btn.good {
-      background: var(--good);
-      color: var(--paper);
-    }
-
-    .btn.danger {
-      background: var(--danger);
-      color: var(--paper);
-    }
-
-    .btn.small {
-      padding: 8px 14px;
-      font-size: 11px;
-      box-shadow: 3px 3px 0 var(--ink);
-    }
-
-    .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      box-shadow: 2px 2px 0 var(--ink);
-    }
-
-    /* ---- LEVEL HUB ---- */
-    .hub-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 28px 24px;
-      background: var(--wall);
-    }
-
-    .level-card {
-      display: flex;
-      align-items: stretch;
-      background: var(--paper);
-      border: 2px solid var(--ink);
-      border-radius: 4px;
-      box-shadow: 4px 4px 0 var(--ink);
-      cursor: pointer;
-      transition: transform 0.08s, box-shadow 0.08s;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .level-card:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0 var(--ink);
-    }
-
-    .level-card:active {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 var(--ink);
-    }
-
-    .level-card.locked {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    .level-card.cleared {
-      border-color: var(--good);
-    }
-
-    .level-accent {
-      width: 10px;
-      flex-shrink: 0;
-    }
-
-    .level-accent.mustard {
-      background: var(--mustard-dark);
-    }
-
-    .level-accent.teal {
-      background: var(--teal);
-    }
-
-    .level-accent.burgundy {
-      background: var(--burgundy);
-    }
-
-    .level-body {
-      padding: 18px 20px;
-      flex: 1;
-    }
-
-    .level-num {
-      font-family: 'Alfa Slab One', serif;
-      font-size: 28px;
-      color: var(--mustard-dark);
-      width: 44px;
-      text-align: center;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .level-card.cleared .level-num {
-      color: var(--good);
-    }
-
-    .level-title {
-      font-family: 'Alfa Slab One', serif;
-      font-size: 18px;
-      margin-bottom: 4px;
-    }
-
-    .level-tag {
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: #777;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-
-    .level-desc {
-      font-size: 12.5px;
-      line-height: 1.6;
-      color: #3a3a2e;
-    }
-
-    .level-status {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      white-space: nowrap;
-      padding: 16px 14px;
-      display: flex;
-      align-items: center;
-    }
-
-    .status-open {
-      color: var(--burgundy);
-    }
-
-    .status-clear {
-      color: var(--good);
-    }
-
-    .status-locked {
-      color: #888;
-    }
-
-    /* ---- FEEDBACK BANNERS ---- */
-    .feedback-banner {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 4px;
-      border: 2px solid var(--ink);
-      font-size: 12.5px;
-      line-height: 1.55;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .feedback-banner.correct {
-      background: #e6f2e2;
-      color: var(--good);
-    }
-
-    .feedback-banner.wrong {
-      background: #f6e3e0;
-      color: var(--danger);
-    }
-
-    .feedback-banner.warn {
-      background: #fff3cd;
-      color: var(--warn);
-    }
-
-    .feedback-icon {
-      font-size: 18px;
-      flex-shrink: 0;
-      margin-top: -1px;
-    }
-
-    /* ---- LEVEL 1: SPOT THE WEAK ---- */
-    .password-stage {
-      padding: 28px 24px;
-      background: var(--wall);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 24px;
-    }
-
-    .pw-card {
-      width: 100%;
-      max-width: 520px;
-      background: #1a1a2e;
-      border: 2px solid var(--ink);
-      border-radius: 6px;
-      padding: 28px 24px;
-      box-shadow: 6px 6px 0 var(--ink);
-      text-align: center;
-      position: relative;
-    }
-
-    .pw-display {
-      font-family: 'Space Mono', monospace;
-      font-size: clamp(20px, 4vw, 32px);
-      font-weight: 700;
-      color: var(--crt-green);
-      letter-spacing: 4px;
-      word-break: break-all;
-      text-shadow: 0 0 12px rgba(57, 255, 110, 0.6);
-      margin-bottom: 8px;
-      min-height: 44px;
-    }
-
-    .pw-counter {
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.45);
-      letter-spacing: 2px;
-      margin-bottom: 20px;
-    }
-
-    .pw-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .pw-btn-weak {
-      font-family: 'Space Mono', monospace;
-      font-weight: 700;
-      font-size: 13px;
-      padding: 12px 28px;
-      border: 3px solid var(--danger);
-      border-radius: 4px;
-      cursor: pointer;
-      background: transparent;
-      color: var(--danger);
-      box-shadow: 4px 4px 0 var(--danger);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: transform .08s, box-shadow .08s, background .08s;
-    }
-
-    .pw-btn-weak:hover {
-      background: var(--danger);
-      color: #fff;
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 var(--danger);
-    }
-
-    .pw-btn-strong {
-      font-family: 'Space Mono', monospace;
-      font-weight: 700;
-      font-size: 13px;
-      padding: 12px 28px;
-      border: 3px solid var(--crt-green);
-      border-radius: 4px;
-      cursor: pointer;
-      background: transparent;
-      color: var(--crt-green);
-      box-shadow: 4px 4px 0 var(--crt-green);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: transform .08s, box-shadow .08s, background .08s;
-    }
-
-    .pw-btn-strong:hover {
-      background: var(--crt-green);
-      color: #1a1a2e;
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 var(--crt-green);
-    }
-
-    /* strength meter */
-    .strength-bar-wrap {
-      width: 100%;
-      background: #0d0d1a;
-      height: 8px;
-      border-radius: 4px;
-      margin: 12px 0;
-      overflow: hidden;
-    }
-
-    .strength-bar {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.4s ease, background 0.4s ease;
-    }
-
-    /* ---- LEVEL 2: PASSWORD UPGRADER ---- */
-    .upgrade-stage {
-      padding: 28px 24px;
-      background: var(--wall);
-    }
-
-    .upgrade-scenario {
-      background: var(--paper);
-      border: 2px solid var(--ink);
-      border-radius: 6px;
-      padding: 18px;
-      margin-bottom: 18px;
-      box-shadow: 4px 4px 0 var(--ink);
-    }
-
-    .upgrade-label {
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #777;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .upgrade-weak-pw {
-      font-family: 'Space Mono', monospace;
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--danger);
-      letter-spacing: 3px;
-    }
-
-    .upgrade-choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .upgrade-choice {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--wall);
-      border: 2px solid var(--ink);
-      border-radius: 4px;
-      padding: 14px 16px;
-      cursor: pointer;
-      font-family: 'Space Mono', monospace;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      transition: transform .08s, box-shadow .08s, background .08s;
-      box-shadow: 3px 3px 0 var(--ink);
-    }
-
-    .upgrade-choice:hover {
-      background: var(--mustard);
-      transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0 var(--ink);
-    }
-
-    .upgrade-choice .badge-letter {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--ink);
-      color: var(--paper);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .upgrade-choice.selected-correct {
-      background: #e6f2e2;
-      border-color: var(--good);
-    }
-
-    .upgrade-choice.selected-wrong {
-      background: #f6e3e0;
-      border-color: var(--danger);
-    }
-
-    .upgrade-choice.reveal-correct {
-      background: #e6f2e2;
-      border-color: var(--good);
-    }
-
-    /* ---- LEVEL 3: CRACK THE PASSWORD ---- */
-    .crack-stage {
-      padding: 28px 24px;
-      background: var(--wall);
-    }
-
-    .profile-card {
-      background: var(--paper);
-      border: 2px solid var(--ink);
-      border-radius: 6px;
-      padding: 18px;
-      margin-bottom: 20px;
-      box-shadow: 4px 4px 0 var(--ink);
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-
-    .profile-avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 3px solid var(--ink);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
-      background: var(--mustard);
-    }
-
-    .profile-info {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .profile-name {
-      font-family: 'Alfa Slab One', serif;
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-
-    .profile-facts {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .fact-chip {
-      background: var(--ink);
-      color: var(--paper);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    .crack-slots {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .crack-slot {
-      background: var(--paper);
-      border: 2px solid var(--ink);
-      border-radius: 6px;
-      padding: 16px;
-      box-shadow: 3px 3px 0 var(--ink);
-    }
-
-    .crack-slot.solved {
-      border-color: var(--good);
-      background: #eef6ea;
-    }
-
-    .crack-slot.failed {
-      border-color: var(--danger);
-      background: #fdf0ef;
-    }
-
-    .crack-slot-label {
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #777;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .crack-hidden {
-      font-family: 'Space Mono', monospace;
-      font-size: 22px;
-      letter-spacing: 6px;
-      color: var(--ink);
-      margin-bottom: 10px;
-    }
-
-    .crack-input-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .crack-input {
-      font-family: 'Space Mono', monospace;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 10px 12px;
-      border: 2px solid var(--ink);
-      border-radius: 4px;
-      background: #fff;
-      flex: 1;
-      min-width: 120px;
-      letter-spacing: 1px;
-    }
-
-    .crack-input:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .attempts-pips {
-      display: flex;
-      gap: 5px;
-      margin-top: 8px;
-    }
-
-    .pip {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 2px solid var(--ink);
-      transition: background 0.2s;
-    }
-
-    .pip.used {
-      background: var(--danger);
-    }
-
-    .pip.empty {
-      background: transparent;
-    }
-
-    /* ---- ENDING ---- */
-    .ending {
-      text-align: center;
-      padding: 40px 24px;
-      background: var(--wall);
-    }
-
-    .certificate {
-      background: var(--paper);
-      border: 6px double var(--mustard-dark);
-      padding: 28px 20px;
-      margin: 20px auto;
-      max-width: 500px;
-      box-shadow: 6px 6px 0 var(--ink);
-    }
-
-    .certificate h2 {
-      color: var(--mustard-dark);
-      font-size: 22px;
-      margin-bottom: 6px;
-    }
-
-    .score-big {
-      font-family: 'Alfa Slab One', serif;
-      font-size: 56px;
-      color: var(--mustard-dark);
-      line-height: 1;
-      margin: 16px 0 4px;
-    }
-
-    .score-label {
-      font-size: 12px;
-      color: #666;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-
-    .score-breakdown {
-      text-align: left;
-      font-size: 12px;
-      line-height: 2;
-      margin-top: 14px;
-    }
-
-    /* ---- MISC ---- */
-    .section-wrap {
-      padding: 28px 24px;
-      background: var(--wall);
-    }
-
-    .sticky {
-      font-family: 'Caveat', cursive;
-      background: #fff6a8;
-      display: inline-block;
-      padding: 2px 6px;
-      transform: rotate(-2deg);
-      border: 1px solid #d8cf6a;
-    }
-
-    @media (max-width: 560px) {
-      .pw-display {
-        font-size: 20px;
-      }
-
-      .upgrade-weak-pw {
-        font-size: 18px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Make Me Secure — CyberWare HQ Password Training</title>
+<meta name="description" content="A 3-level interactive password security training game. Spot weak passwords, upgrade them, and crack easy ones to see why personal info is dangerous.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Space+Mono:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+  const app = initializeApp({apiKey:"AIzaSyApA-NIAWlKKG43XAwquM8hNpXUMXfOSog",authDomain:"unsafe-buiness.firebaseapp.com",databaseURL:"https://unsafe-buiness-default-rtdb.firebaseio.com",projectId:"unsafe-buiness",storageBucket:"unsafe-buiness.firebasestorage.app",messagingSenderId:"385683427722",appId:"1:385683427722:web:63db29017db39eaf503873"});
+  window.db = getDatabase(app); window.firebasePush = push; window.firebaseRef = ref; window.firebaseSet = set; window.firebaseGet = get; window.firebaseUpdate = update;
+</script>
+<style>
+  :root {
+    --wall: #E4D9BE;
+    --wall-dark: #D3C6A2;
+    --tile-a: #C9BFA0;
+    --tile-b: #AFA37F;
+    --teal: #2F6B67;
+    --teal-dark: #1B4643;
+    --burgundy: #8B3A4A;
+    --burgundy-dark: #642A35;
+    --mustard: #D9A441;
+    --mustard-dark: #B4832C;
+    --navy: #232336;
+    --paper: #F4EEDD;
+    --crt-green: #39FF6E;
+    --ink: #232336;
+    --danger: #B23B3B;
+    --good: #3F7A4D;
+    --warn: #C67C00;
+    font-family: 'Space Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--navy);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  #app {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background:
+      linear-gradient(rgba(35,35,54,0.65), rgba(35,35,54,0.85)),
+      url('./bg.png') center/cover no-repeat fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .stage { width: 100%; max-width: 960px; position: relative; }
+  h1, h2, h3 { font-family: 'Alfa Slab One', serif; margin: 0; letter-spacing: 0.5px; }
+
+  /* ---- CRT FRAME ---- */
+  .crt-frame {
+    position: relative;
+    background: #0d1410;
+    border-radius: 10px;
+    padding: 3px;
+    box-shadow: 0 0 0 3px #111, 0 18px 40px rgba(0,0,0,0.55), inset 0 0 30px rgba(0,0,0,0.8);
+  }
+  .crt-inner {
+    position: relative;
+    border-radius: 7px;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .crt-inner::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 2px, transparent 3px);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    z-index: 5;
+  }
+  .crt-inner::after {
+    content: "";
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.35);
+    pointer-events: none;
+    z-index: 6;
+  }
+  .rec-tag {
+    position: absolute; top: 10px; right: 14px; z-index: 8;
+    font-size: 11px; font-weight: 700; color: #ff4d4d;
+    display: flex; align-items: center; gap: 6px;
+    text-shadow: 0 0 6px rgba(255,0,0,0.6);
+    letter-spacing: 1px;
+  }
+  .rec-dot { width: 8px; height: 8px; border-radius: 50%; background: #ff4d4d; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.15; } }
+  .timestamp {
+    position: absolute; bottom: 10px; left: 14px; z-index: 8;
+    font-size: 10px; color: rgba(35,35,54,0.55); letter-spacing: 1px;
+  }
+
+  /* ---- MARQUEE ---- */
+  .marquee {
+    background: var(--mustard-dark);
+    color: var(--paper);
+    padding: 22px 16px 18px;
+    border-bottom: 6px solid var(--mustard);
+    margin: -3px -3px 0 -3px;
+    border-radius: 7px 7px 0 0;
+  }
+  .marquee h1 { font-size: clamp(24px,4vw,40px); color: var(--paper); text-shadow: 3px 3px 0 rgba(0,0,0,0.25); }
+  .marquee .sub { font-family: 'Space Mono', monospace; font-size: 13px; letter-spacing: 3px; margin-top: 8px; opacity: 0.9; }
+
+  /* ---- SCENE HEADER ---- */
+  .scene-header {
+    background: var(--mustard-dark);
+    color: var(--paper);
+    padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+    border-bottom: 5px solid var(--mustard);
+  }
+  .scene-header h2 { font-size: 18px; color: var(--paper); }
+  .scene-header .ftag { font-size: 11px; opacity: 0.85; }
+  .progress-pill {
+    background: rgba(0,0,0,0.25);
+    padding: 5px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* ---- BUTTONS ---- */
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 13px 26px;
+    border: 3px solid var(--ink);
+    border-radius: 4px;
+    cursor: pointer;
+    background: var(--mustard);
+    color: var(--navy);
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .btn:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn:active { transform: translate(4px,4px); box-shadow: 0 0 0 var(--ink); }
+  .btn.secondary { background: var(--paper); }
+  .btn.good { background: var(--good); color: var(--paper); }
+  .btn.danger { background: var(--danger); color: var(--paper); }
+  .btn.small { padding: 8px 14px; font-size: 11px; box-shadow: 3px 3px 0 var(--ink); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: 2px 2px 0 var(--ink); }
+
+  /* ---- LEVEL HUB ---- */
+  .hub-grid {
+    display: flex; flex-direction: column; gap: 16px;
+    padding: 28px 24px;
+    background: var(--wall);
+  }
+  .level-card {
+    display: flex; align-items: stretch;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+    overflow: hidden;
+    position: relative;
+  }
+  .level-card:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+  .level-card:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
+  .level-card.locked { opacity: 0.45; cursor: not-allowed; }
+  .level-card.cleared { border-color: var(--good); }
+  .level-accent { width: 10px; flex-shrink: 0; }
+  .level-accent.mustard { background: var(--mustard-dark); }
+  .level-accent.teal { background: var(--teal); }
+  .level-accent.burgundy { background: var(--burgundy); }
+  .level-body { padding: 18px 20px; flex: 1; }
+  .level-num {
+    font-family: 'Alfa Slab One', serif;
+    font-size: 28px;
+    color: var(--mustard-dark);
+    width: 44px; text-align: center; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .level-card.cleared .level-num { color: var(--good); }
+  .level-title { font-family: 'Alfa Slab One', serif; font-size: 18px; margin-bottom: 4px; }
+  .level-tag { font-size: 10px; letter-spacing: 2px; color: #777; margin-bottom: 8px; text-transform: uppercase; }
+  .level-desc { font-size: 12.5px; line-height: 1.6; color: #3a3a2e; }
+  .level-status { font-size: 11px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; padding: 16px 14px; display: flex; align-items: center; }
+  .status-open { color: var(--burgundy); }
+  .status-clear { color: var(--good); }
+  .status-locked { color: #888; }
+
+  /* ---- FEEDBACK BANNERS ---- */
+  .feedback-banner {
+    margin-top: 14px; padding: 12px 14px; border-radius: 4px;
+    border: 2px solid var(--ink);
+    font-size: 12.5px; line-height: 1.55;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .feedback-banner.correct { background: #e6f2e2; color: var(--good); }
+  .feedback-banner.wrong { background: #f6e3e0; color: var(--danger); }
+  .feedback-banner.warn { background: #fff3cd; color: var(--warn); }
+  .feedback-icon { font-size: 18px; flex-shrink: 0; margin-top: -1px; }
+
+  /* ---- LEVEL 1: SPOT THE WEAK ---- */
+  .password-stage {
+    padding: 28px 24px;
+    background: var(--wall);
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+  }
+  .pw-card {
+    width: 100%; max-width: 520px;
+    background: #1a1a2e;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 28px 24px;
+    box-shadow: 6px 6px 0 var(--ink);
+    text-align: center;
+    position: relative;
+  }
+  .pw-display {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: 700;
+    color: var(--crt-green);
+    letter-spacing: 4px;
+    word-break: break-all;
+    text-shadow: 0 0 12px rgba(57,255,110,0.6);
+    margin-bottom: 8px;
+    min-height: 44px;
+  }
+  .pw-counter {
+    font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 2px; margin-bottom: 20px;
+  }
+  .pw-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .pw-btn-weak {
+    font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13px;
+    padding: 12px 28px; border: 3px solid var(--danger); border-radius: 4px;
+    cursor: pointer; background: transparent; color: var(--danger);
+    box-shadow: 4px 4px 0 var(--danger); letter-spacing: 1px; text-transform: uppercase;
+    transition: transform .08s, box-shadow .08s, background .08s;
+  }
+  .pw-btn-weak:hover { background: var(--danger); color: #fff; transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--danger); }
+  .pw-btn-strong {
+    font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13px;
+    padding: 12px 28px; border: 3px solid var(--crt-green); border-radius: 4px;
+    cursor: pointer; background: transparent; color: var(--crt-green);
+    box-shadow: 4px 4px 0 var(--crt-green); letter-spacing: 1px; text-transform: uppercase;
+    transition: transform .08s, box-shadow .08s, background .08s;
+  }
+  .pw-btn-strong:hover { background: var(--crt-green); color: #1a1a2e; transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--crt-green); }
+
+  /* strength meter */
+  .strength-bar-wrap {
+    width: 100%; background: #0d0d1a; height: 8px; border-radius: 4px;
+    margin: 12px 0; overflow: hidden;
+  }
+  .strength-bar { height: 100%; border-radius: 4px; transition: width 0.4s ease, background 0.4s ease; }
+
+  /* ---- LEVEL 2: PASSWORD UPGRADER ---- */
+  .upgrade-stage {
+    padding: 28px 24px;
+    background: var(--wall);
+  }
+  .upgrade-scenario {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .upgrade-label { font-size: 11px; letter-spacing: 2px; color: #777; text-transform: uppercase; margin-bottom: 6px; }
+  .upgrade-weak-pw {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px; font-weight: 700;
+    color: var(--danger);
+    letter-spacing: 3px;
+  }
+  .upgrade-choices { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+  .upgrade-choice {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--wall);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    padding: 14px 16px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 1px;
+    transition: transform .08s, box-shadow .08s, background .08s;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .upgrade-choice:hover { background: var(--mustard); transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .upgrade-choice .badge-letter {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .upgrade-choice.selected-correct { background: #e6f2e2; border-color: var(--good); }
+  .upgrade-choice.selected-wrong { background: #f6e3e0; border-color: var(--danger); }
+  .upgrade-choice.reveal-correct { background: #e6f2e2; border-color: var(--good); }
+
+  /* ---- LEVEL 3: CRACK THE PASSWORD ---- */
+  .crack-stage {
+    padding: 28px 24px;
+    background: var(--wall);
+  }
+  .profile-card {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 4px 4px 0 var(--ink);
+    display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start;
+  }
+  .profile-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 3px solid var(--ink); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    background: var(--mustard);
+  }
+  .profile-info { flex: 1; min-width: 200px; }
+  .profile-name { font-family: 'Alfa Slab One', serif; font-size: 18px; margin-bottom: 8px; }
+  .profile-facts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fact-chip {
+    background: var(--ink); color: var(--paper);
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  }
+
+  .crack-slots { display: flex; flex-direction: column; gap: 16px; }
+  .crack-slot {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .crack-slot.solved { border-color: var(--good); background: #eef6ea; }
+  .crack-slot.failed { border-color: var(--danger); background: #fdf0ef; }
+  .crack-slot-label { font-size: 11px; letter-spacing: 2px; color: #777; text-transform: uppercase; margin-bottom: 8px; }
+  .crack-hidden {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px; letter-spacing: 6px;
+    color: var(--ink); margin-bottom: 10px;
+  }
+  .crack-input-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .crack-input {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px; font-weight: 700;
+    padding: 10px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    background: #fff;
+    flex: 1; min-width: 120px;
+    letter-spacing: 1px;
+  }
+  .crack-input:disabled { opacity: 0.5; cursor: not-allowed; }
+  .attempts-pips { display: flex; gap: 5px; margin-top: 8px; }
+  .pip {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid var(--ink);
+    transition: background 0.2s;
+  }
+  .pip.used { background: var(--danger); }
+  .pip.empty { background: transparent; }
+
+  /* ---- ENDING ---- */
+  .ending { text-align: center; padding: 40px 24px; background: var(--wall); }
+  .certificate {
+    background: var(--paper);
+    border: 6px double var(--mustard-dark);
+    padding: 28px 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .certificate h2 { color: var(--mustard-dark); font-size: 22px; margin-bottom: 6px; }
+  .score-big { font-family: 'Alfa Slab One', serif; font-size: 56px; color: var(--mustard-dark); line-height: 1; margin: 16px 0 4px; }
+  .score-label { font-size: 12px; color: #666; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; }
+  .score-breakdown { text-align: left; font-size: 12px; line-height: 2; margin-top: 14px; }
+
+  /* ---- MISC ---- */
+  .section-wrap { padding: 28px 24px; background: var(--wall); }
+  .title-screen { text-align: center; padding: 48px 28px 40px; }
+  .reg-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .reg-tab {
+    flex: 1;
+    padding: 8px;
+    background: var(--wall);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    font-size: 11px;
+    transition: all 0.15s ease;
+  }
+  .reg-tab.active {
+    background: var(--mustard);
+    box-shadow: 2px 2px 0 var(--ink);
+    transform: translate(-1px, -1px);
+  }
+  .reg-panel { display: none; }
+  .reg-panel.active { display: block; }
+  .select-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    font-family: 'Space Mono';
+    font-size: 14px;
+    background: #fff;
+  }
+  .sticky { font-family: 'Caveat', cursive; background: #fff6a8; display: inline-block; padding: 2px 6px; transform: rotate(-2deg); border: 1px solid #d8cf6a; }
+
+  @media (max-width: 560px) {
+    .pw-display { font-size: 20px; }
+    .upgrade-weak-pw { font-size: 18px; }
+  }
+</style>
 </head>
-
 <body>
-  <img src="Icon - Red.png" alt="Logo"
-    style="position:fixed; top:20px; left:20px; width:60px; height:auto; z-index:100;">
-  <div id="app">
-    <div class="stage" id="stage"></div>
-  </div>
+<img src="Icon - Red.png" alt="Logo" style="position:fixed; top:20px; left:20px; width:60px; height:auto; z-index:100;">
+<div id="app">
+  <div class="stage" id="stage"></div>
+</div>
 
-  <script>
-    /* ============================================================
-       DATA
-       ============================================================ */
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
 
-    /* ---- LEVEL 1: Spot the Weak ---- */
-    const L1_PASSWORDS = [
-      {
-        pw: "password",
-        isStrong: false,
-        why: "\"password\" is the #1 most-used password in the world. It's in every hacker's dictionary and will be cracked in under a second.",
-        strength: 5
-      },
-      {
-        pw: "123456",
-        isStrong: false,
-        why: "Pure sequential numbers — attackers try these first. It has no letters, no symbols, and zero unpredictability.",
-        strength: 3
-      },
-      {
-        pw: "Tr0ub4dor&3",
-        isStrong: true,
-        why: "Long, mixes uppercase, numbers, and a symbol — and it doesn't appear in any dictionary. This one holds up well.",
-        strength: 92
-      },
-      {
-        pw: "sunshine",
-        isStrong: false,
-        why: "A single common English word. Password crackers run through every word in the dictionary — this takes seconds.",
-        strength: 10
-      },
-      {
-        pw: "P@ssw0rd!",
-        isStrong: false,
-        why: "This looks strong but it's a very well-known substitution pattern (@ for a, 0 for o). Crack tools know all these tricks.",
-        strength: 28
-      },
-      {
-        pw: "c#Wq9!mZ$vR2",
-        isStrong: true,
-        why: "Random mix of upper, lower, numbers, and symbols — 12 characters long. This would take centuries to crack by brute force.",
-        strength: 98
-      }
-    ];
+/* ---- LEVEL 1: Spot the Weak ---- */
+const L1_PASSWORDS = [
+  {
+    pw: "password",
+    isStrong: false,
+    why: "\"password\" is the #1 most-used password in the world. It's in every hacker's dictionary and will be cracked in under a second.",
+    strength: 5
+  },
+  {
+    pw: "123456",
+    isStrong: false,
+    why: "Pure sequential numbers — attackers try these first. It has no letters, no symbols, and zero unpredictability.",
+    strength: 3
+  },
+  {
+    pw: "Tr0ub4dor&3",
+    isStrong: true,
+    why: "Long, mixes uppercase, numbers, and a symbol — and it doesn't appear in any dictionary. This one holds up well.",
+    strength: 92
+  },
+  {
+    pw: "sunshine",
+    isStrong: false,
+    why: "A single common English word. Password crackers run through every word in the dictionary — this takes seconds.",
+    strength: 10
+  },
+  {
+    pw: "P@ssw0rd!",
+    isStrong: false,
+    why: "This looks strong but it's a very well-known substitution pattern (@ for a, 0 for o). Crack tools know all these tricks.",
+    strength: 28
+  },
+  {
+    pw: "c#Wq9!mZ$vR2",
+    isStrong: true,
+    why: "Random mix of upper, lower, numbers, and symbols — 12 characters long. This would take centuries to crack by brute force.",
+    strength: 98
+  }
+];
 
-    /* ---- LEVEL 2: Password Upgrader ---- */
-    const L2_SCENARIOS = [
-      {
-        weak: "fluffy",
-        hint: "Your cat's name. Short, all lowercase, a simple word.",
-        choices: [
-          { text: "F1uffy!", label: "A", points: 30 },
-          { text: "Fluffy_1s_My_C4t!", label: "B", points: 95 },
-          { text: "Fluffy_2024_!", label: "C", points: 40 }
-        ],
-        correct: "B",
-        feedback: {
-          A: "Common character substitution (1 for l) and adding a symbol at the end is very predictable for cracking tools.",
-          B: "A long passphrase is much harder to crack than a single word, even with substitutions. Length is your best defense.",
-          C: "Appending the current year and a symbol is one of the most common ways people try to make passwords complex. It's still easily guessable."
-        }
-      },
-      {
-        weak: "summer2024",
-        hint: "A season + year. Very predictable — millions of people use this formula.",
-        choices: [
-          { text: "$ummer2024!", label: "A", points: 25 },
-          { text: "W!nt3r#2025", label: "B", points: 45 },
-          { text: "Svmmer!_VacaT10n_@24", label: "C", points: 96 }
-        ],
-        correct: "C",
-        feedback: {
-          A: "Replacing 'S' with '$' and adding '!' is barely an upgrade. It's still the exact same predictable pattern.",
-          B: "Changing the season and incrementing the year is better, but still follows the easily guessable season+year format.",
-          C: "Adding additional words, mixing cases, and separating with symbols creates a long, unpredictable passphrase."
-        }
-      },
-      {
-        weak: "qwerty",
-        hint: "Keyboard row sequence. Often the top-5 most-breached password worldwide.",
-        choices: [
-          { text: "QweRty!@#", label: "A", points: 15 },
-          { text: "qW3rTy_987", label: "B", points: 25 },
-          { text: "T0p_R0w_K3yb0ard_M@sh!", label: "C", points: 99 }
-        ],
-        correct: "C",
-        feedback: {
-          A: "Capitalising random letters and adding sequential symbols (!@#) doesn't hide the obvious keyboard pattern base.",
-          B: "Adding a reverse sequential number (987) to a sequential keyboard pattern is still two weak patterns combined.",
-          C: "A long phrase that incorporates the concept without relying on the actual sequential keys. Much stronger."
-        }
-      },
-      {
-        weak: "dragon",
-        hint: "A single dictionary word — popular in gaming communities. Ranks top-20 most common passwords.",
-        choices: [
-          { text: "Dr@g0n_2024", label: "A", points: 35 },
-          { text: "G0ld3n_Dr@g0n!", label: "B", points: 65 },
-          { text: "Th3_8lue_Dr4g0n_Fl!3s", label: "C", points: 99 }
-        ],
-        correct: "C",
-        feedback: {
-          A: "Basic substitutions (a->@, o->0) plus a year is a known formula cracked instantly by modern tools.",
-          B: "Adding a color word is better, but still relatively short and uses common substitutions.",
-          C: "A full sentence/phrase with multiple words, numbers, and symbols is incredibly resilient against brute force attacks."
-        }
-      }
-    ];
-
-    /* ---- LEVEL 3: Crack the Password ---- */
-    const L3_PROFILES = [
-      {
-        emoji: "🧑‍💼",
-        name: "Marc Dupont",
-        facts: ["Born: 1990", "Pet: Max (dog)", "City: Lyon", "Hobby: Football"],
-        passwords: [
-          {
-            hint: "His city in uppercase, followed by his pet's name in lowercase",
-            answer: "LYONmax",
-            display: "•••••••",
-            explain: "Combining two pieces of personal info is a common trick. Attackers run scripts that generate all permutations of your profile data."
-          },
-          {
-            hint: "His favourite sport + the year he was born",
-            answer: "football1990",
-            display: "••••••••••••",
-            explain: "A hobby word + a full birth year is another extremely predictable pattern that attackers specifically target."
-          },
-          {
-            hint: "His pet's name, an exclamation mark, and the first two digits of his birth year",
-            answer: "max!19",
-            display: "••••••",
-            explain: "Inserting a symbol between dictionary words or dates doesn't fool cracking algorithms, which look for exactly these patterns."
-          }
-        ]
-      },
-      {
-        emoji: "👩‍🔬",
-        name: "Sofia Reyes",
-        facts: ["Born: 1995", "Pet: Luna (cat)", "City: Madrid", "Fav colour: Blue"],
-        passwords: [
-          {
-            hint: "Her favourite colour spelt backwards, all lowercase",
-            answer: "eulb",
-            display: "••••",
-            explain: "Spelling words backwards is a well-known 'trick' that all cracking dictionaries account for instantly."
-          },
-          {
-            hint: "Her city and pet name combined, all lowercase",
-            answer: "madridluna",
-            display: "••••••••••",
-            explain: "Two personal words strung together. Even if it's long, combining known facts is trivial for targeted attacks."
-          },
-          {
-            hint: "First 3 letters of her city + her birth year",
-            answer: "mad1995",
-            display: "•••••••",
-            explain: "Using only parts of words (like the first 3 letters) combined with a date is a standard variation attackers test."
-          }
-        ]
-      },
-      {
-        emoji: "🧑‍🎸",
-        name: "Jake Miller",
-        facts: ["Born: 2001", "Band: Nirvana fan", "City: Austin", "Nickname: JayBird"],
-        passwords: [
-          {
-            hint: "His nickname, all lowercase, with '!' in the middle",
-            answer: "jay!bird",
-            display: "••••••••",
-            explain: "Inserting a symbol in the middle of a known name or word is a common technique that crackers easily bypass."
-          },
-          {
-            hint: "His favourite band, capitalised, plus his birth year",
-            answer: "Nirvana2001",
-            display: "•••••••••••",
-            explain: "Band name + birth year is a pattern attackers exploit frequently by scraping public social media info."
-          },
-          {
-            hint: "His city spelt backwards, all lowercase",
-            answer: "nitsua",
-            display: "••••••",
-            explain: "Just like spelling a color backwards, reversing your city provides zero actual security against automated tools."
-          }
-        ]
-      }
-    ];
-
-    /* ============================================================
-       STATE
-       ============================================================ */
-    const state = {
-      screen: "hub",   // hub | l1 | l2 | l3 | ending
-      // L1
-      l1Index: 0,
-      l1Score: 0,
-      l1Phase: "guess",  // guess | reveal
-      l1UserChoice: null, // "weak" | "strong"
-      // L2
-      l2Index: 0,
-      l2Score: 0,
-      l2Phase: "choose", // choose | reveal
-      l2UserChoice: null,
-      // L3
-      l3ProfileIndex: 0,
-      l3PwIndex: 0,
-      l3Score: 0,
-      l3Attempts: 0,
-      l3SlotStates: [], // per-slot: "pending"|"solved"|"failed"
-      l3Revealed: false,
-      // overall
-      levelsCleared: { l1: false, l2: false, l3: false }
-    };
-
-    /* ============================================================
-       HELPERS
-       ============================================================ */
-    const stage = document.getElementById('stage');
-    function el(html) {
-      const d = document.createElement('div');
-      d.innerHTML = html.trim();
-      return d.firstElementChild;
+/* ---- LEVEL 2: Password Upgrader ---- */
+const L2_SCENARIOS = [
+  {
+    weak: "fluffy",
+    hint: "Your cat's name. Short, all lowercase, a simple word.",
+    choices: [
+      { text: "Fluffy_1s_My_C4t!",      label: "B", points: 95 },
+      { text: "F1uffy!",                label: "A", points: 30 },
+      { text: "Fluffy_2024_!",          label: "C", points: 40 }
+    ],
+    correct: "B",
+    feedback: {
+      A: "Common character substitution (1 for l) and adding a symbol at the end is very predictable for cracking tools.",
+      B: "A long passphrase is much harder to crack than a single word, even with substitutions. Length is your best defense.",
+      C: "Appending the current year and a symbol is one of the most common ways people try to make passwords complex. It's still easily guessable."
     }
-    function render() {
-      stage.innerHTML = "";
-      if (state.screen === "hub") stage.appendChild(renderHub());
-      if (state.screen === "l1") stage.appendChild(renderL1());
-      if (state.screen === "l2") stage.appendChild(renderL2());
-      if (state.screen === "l3") stage.appendChild(renderL3());
-      if (state.screen === "ending") stage.appendChild(renderEnding());
+  },
+  {
+    weak: "summer2024",
+    hint: "A season + year. Very predictable — millions of people use this formula.",
+    choices: [
+      { text: "W!nt3r#2025",           label: "B", points: 45 },
+      { text: "Svmmer!_VacaT10n_@24",  label: "C", points: 96 },
+      { text: "$ummer2024!",           label: "A", points: 25 }
+    ],
+    correct: "C",
+    feedback: {
+      A: "Replacing 'S' with '$' and adding '!' is barely an upgrade. It's still the exact same predictable pattern.",
+      B: "Changing the season and incrementing the year is better, but still follows the easily guessable season+year format.",
+      C: "Adding additional words, mixing cases, and separating with symbols creates a long, unpredictable passphrase."
     }
-    function back(dest) {
-      state.screen = dest;
-      render();
+  },
+  {
+    weak: "qwerty",
+    hint: "Keyboard row sequence. Often the top-5 most-breached password worldwide.",
+    choices: [
+      { text: "qW3rTy_987",               label: "B", points: 25  },
+      { text: "T0p_R0w_K3yb0ard_M@sh!",   label: "C", points: 99 },
+      { text: "QweRty!@#",                label: "A", points: 15 }
+    ],
+    correct: "C",
+    feedback: {
+      A: "Capitalising random letters and adding sequential symbols (!@#) doesn't hide the obvious keyboard pattern base.",
+      B: "Adding a reverse sequential number (987) to a sequential keyboard pattern is still two weak patterns combined.",
+      C: "A long phrase that incorporates the concept without relying on the actual sequential keys. Much stronger."
     }
+  },
+  {
+    weak: "dragon",
+    hint: "A single dictionary word — popular in gaming communities. Ranks top-20 most common passwords.",
+    choices: [
+      { text: "Th3_8lue_Dr4g0n_Fl!3s", label: "C", points: 99 },
+      { text: "Dr@g0n_2024",           label: "A", points: 35 },
+      { text: "G0ld3n_Dr@g0n!",        label: "B", points: 65 }
+    ],
+    correct: "C",
+    feedback: {
+      A: "Basic substitutions (a->@, o->0) plus a year is a known formula cracked instantly by modern tools.",
+      B: "Adding a color word is better, but still relatively short and uses common substitutions.",
+      C: "A full sentence/phrase with multiple words, numbers, and symbols is incredibly resilient against brute force attacks."
+    }
+  }
+];
 
-    /* ============================================================
-       HUB
-       ============================================================ */
-    function renderHub() {
-      const cleared = state.levelsCleared;
-      function statusOf(key, prevKey) {
-        if (cleared[key]) return `<span class="status-clear">✔ CLEARED</span>`;
-        if (!prevKey || cleared[prevKey]) return `<span class="status-open">▶ PLAY</span>`;
-        return `<span class="status-locked">🔒 LOCKED</span>`;
+/* ---- LEVEL 3: Crack the Password ---- */
+const L3_PROFILES = [
+  {
+    emoji: "🧑‍💼",
+    name: "Marc Dupont",
+    facts: ["Born: 1990", "Pet: Max (dog)", "City: Lyon", "Hobby: Football"],
+    passwords: [
+      {
+        hint: "Two everyday details from his profile, joined together with the first one capitalised",
+        answer: "LYONmax",
+        display: "•••••••",
+        explain: "Combining two pieces of personal info is a common trick. Attackers run scripts that generate all permutations of your profile data."
+      },
+      {
+        hint: "Think of a pastime paired with a four-digit personal date",
+        answer: "football1990",
+        display: "••••••••••••",
+        explain: "A hobby word + a full birth year is another extremely predictable pattern that attackers specifically target."
+      },
+      {
+        hint: "A familiar name, one punctuation mark, and the shortened version of a personal date",
+        answer: "max!19",
+        display: "••••••",
+        explain: "Inserting a symbol between dictionary words or dates doesn't fool cracking algorithms, which look for exactly these patterns."
       }
-      const l1Locked = false;
-      const l2Locked = !cleared.l1;
-      const l3Locked = !cleared.l2;
+    ]
+  },
+  {
+    emoji: "👩‍🔬",
+    name: "Sofia Reyes",
+    facts: ["Born: 1995", "Pet: Luna (cat)", "City: Madrid", "Fav colour: Blue"],
+    passwords: [
+      {
+        hint: "A colour clue, but read from the other direction",
+        answer: "eulb",
+        display: "••••",
+        explain: "Spelling words backwards is a well-known 'trick' that all cracking dictionaries account for instantly."
+      },
+      {
+        hint: "Two profile words placed directly beside each other",
+        answer: "madridluna",
+        display: "••••••••••",
+        explain: "Two personal words strung together. Even if it's long, combining known facts is trivial for targeted attacks."
+      },
+      {
+        hint: "The opening fragment of a place followed by a four-digit date",
+        answer: "mad1995",
+        display: "•••••••",
+        explain: "Using only parts of words (like the first 3 letters) combined with a date is a standard variation attackers test."
+      }
+    ]
+  },
+  {
+    emoji: "🧑‍🎸",
+    name: "Jake Miller",
+    facts: ["Born: 2001", "Band: Nirvana fan", "City: Austin", "Nickname: JayBird"],
+    passwords: [
+      {
+        hint: "A personal alias split by a single punctuation mark",
+        answer: "jay!bird",
+        display: "••••••••",
+        explain: "Inserting a symbol in the middle of a known name or word is a common technique that crackers easily bypass."
+      },
+      {
+        hint: "A music reference followed by a four-digit personal date",
+        answer: "Nirvana2001",
+        display: "•••••••••••",
+        explain: "Band name + birth year is a pattern attackers exploit frequently by scraping public social media info."
+      },
+      {
+        hint: "A place clue, read from the other direction",
+        answer: "nitsua",
+        display: "••••••",
+        explain: "Just like spelling a color backwards, reversing your city provides zero actual security against automated tools."
+      }
+    ]
+  }
+];
 
-      const wrap = el(`
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  screen: "registration",   // registration | hub | l1 | l2 | l3 | ending
+  // L1
+  l1Index: 0,
+  l1Score: 0,
+  l1Phase: "guess",  // guess | reveal
+  l1UserChoice: null, // "weak" | "strong"
+  // L2
+  l2Index: 0,
+  l2Score: 0,
+  l2Phase: "choose", // choose | reveal
+  l2UserChoice: null,
+  // L3
+  l3ProfileIndex: 0,
+  l3PwIndex: 0,
+  l3Score: 0,
+  l3Attempts: 0,
+  l3SlotStates: [], // per-slot: "pending"|"solved"|"failed"
+  l3Revealed: false,
+  teamKey: null,
+  isSolo: true,
+  teamName: "Anonymous Solo",
+  // overall
+  levelsCleared: { l1: false, l2: false, l3: false }
+};
+const MAX_L3_ATTEMPTS = 2;
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const stage = document.getElementById('stage');
+function el(html) {
+  const d = document.createElement('div');
+  d.innerHTML = html.trim();
+  return d.firstElementChild;
+}
+function render() {
+  stage.innerHTML = "";
+  if (state.screen === "registration") stage.appendChild(renderRegistration());
+  if (state.screen === "hub")    stage.appendChild(renderHub());
+  if (state.screen === "l1")     stage.appendChild(renderL1());
+  if (state.screen === "l2")     stage.appendChild(renderL2());
+  if (state.screen === "l3")     stage.appendChild(renderL3());
+  if (state.screen === "ending") stage.appendChild(renderEnding());
+}
+
+let secureTeams = {};
+function renderRegistration() {
+  const wrap = el(`<div class="crt-frame"><div class="crt-inner"><div class="rec-tag"><span class="rec-dot"></span>REC</div><div class="marquee"><h1>Make Me Secure</h1><div class="sub">CHOOSE YOUR TRAINING MODE</div></div><div class="title-screen" style="text-align:left; max-width:460px; margin:0 auto; padding-top:24px;"><div class="reg-options"><div class="reg-tab active" id="secureSoloTab">Play Solo</div><div class="reg-tab" id="secureJoinTab">Join a Team</div><div class="reg-tab" id="secureCreateTab">New Team</div></div><div class="reg-panel active" id="secureSoloPanel"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Your Name (Optional)</label><input type="text" id="secureSoloName" placeholder="e.g. Agent Smith" style="width:100%;padding:10px;margin-bottom:12px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:24px;cursor:pointer;font-weight:bold;"><input type="checkbox" id="secureSoloAnon" style="width:16px;height:16px;accent-color:var(--mustard);">Play anonymously (don't save to leaderboard)</label><div style="text-align:center;"><button class="btn" id="secureStartSolo">Start Solo Training</button></div></div><div class="reg-panel" id="secureJoinPanel"><div id="secureJoinStatus" style="font-size:13px;margin-bottom:16px;font-style:italic;color:#555;">Connecting to database...</div><div id="secureJoinContent"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Select Team</label><select id="secureTeamSelect" class="select-input"></select><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Your Name</label><input type="text" id="secureJoinName" placeholder="e.g. Alice" style="width:100%;padding:10px;margin-bottom:24px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><div style="text-align:center;"><button class="btn" id="secureJoin">Join &amp; Start</button></div></div></div><div class="reg-panel" id="secureCreatePanel"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Team Name</label><input id="secureTeamName" type="text" placeholder="e.g. The Cyber Sleuths" style="width:100%;padding:10px;margin-bottom:16px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Team Members (comma separated)</label><input id="secureTeamMembers" type="text" placeholder="e.g. Alice, Bob, Charlie" style="width:100%;padding:10px;margin-bottom:24px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><div style="text-align:center;"><button class="btn" id="secureCreate">Register &amp; Start</button></div></div><div style="margin-top:16px;text-align:center;"><button class="btn secondary small" id="secureBack">← Back to Hub</button></div></div><div class="timestamp">MAKE ME SECURE — REGISTRATION</div></div></div>`);
+  const panels={Solo:[wrap.querySelector('#secureSoloTab'),wrap.querySelector('#secureSoloPanel')],Join:[wrap.querySelector('#secureJoinTab'),wrap.querySelector('#secureJoinPanel')],Create:[wrap.querySelector('#secureCreateTab'),wrap.querySelector('#secureCreatePanel')]};
+  const switchMode=mode=>Object.entries(panels).forEach(([key,pair])=>{pair[0].classList.toggle('active',key===mode);pair[1].classList.toggle('active',key===mode);});
+  panels.Solo[0].onclick=()=>switchMode('Solo'); panels.Join[0].onclick=()=>{switchMode('Join');loadSecureTeams();}; panels.Create[0].onclick=()=>switchMode('Create');
+  const start=()=>{state.screen='hub';render();};
+  wrap.querySelector('#secureStartSolo').onclick=()=>{const name=wrap.querySelector('#secureSoloName').value.trim();state.isSolo=true;state.anonymous=wrap.querySelector('#secureSoloAnon').checked;state.teamName=name?`${name} (Solo)`:'Anonymous Solo';state.teamKey=null;if(!state.anonymous&&name)saveSecureTeam(name,name,true,start);else start();};
+  wrap.querySelector('#secureCreate').onclick=()=>{const name=wrap.querySelector('#secureTeamName').value.trim();const members=wrap.querySelector('#secureTeamMembers').value.trim();if(!name||!members)return alert('Please enter a team name and members.');state.isSolo=false;state.teamName=name;saveSecureTeam(name,members,false,start);};
+  wrap.querySelector('#secureJoin').onclick=()=>{const key=wrap.querySelector('#secureTeamSelect').value;const name=wrap.querySelector('#secureJoinName').value.trim();if(!name||!secureTeams[key])return alert('Choose a team and enter your name.');state.isSolo=false;state.teamKey=key;state.teamName=secureTeams[key].teamName||'Team';const members=secureTeams[key].teamMembers||'';if(window.db&&window.firebaseUpdate)window.firebaseUpdate(window.firebaseRef(window.db,`secure_teams/${key}`),{teamMembers:members?`${members}, ${name}`:name}).then(start).catch(start);else start();};
+  wrap.querySelector('#secureBack').onclick=()=>{window.location.href='index.html';}; return wrap;
+}
+function saveSecureTeam(name,members,isSolo,done){if(window.db&&window.firebasePush&&window.firebaseSet){const teamRef=window.firebasePush(window.firebaseRef(window.db,'secure_teams'));state.teamKey=teamRef.key;window.firebaseSet(teamRef,{teamName:name+(isSolo?' (Solo)':''),teamMembers:members,isSolo,timestamp:new Date().toISOString()}).then(done).catch(done);}else done();}
+function loadSecureTeams(){const status=document.getElementById('secureJoinStatus');const select=document.getElementById('secureTeamSelect');if(!window.db||!window.firebaseGet){status.textContent='Database offline. Create a team or play solo.';return;}window.firebaseGet(window.firebaseRef(window.db,'secure_teams')).then(snapshot=>{secureTeams=snapshot.exists()?snapshot.val():{};select.innerHTML=Object.keys(secureTeams).filter(key=>!secureTeams[key].completed).map(key=>`<option value="${key}">${secureTeams[key].teamName||'Unnamed Team'}</option>`).join('');status.textContent=select.options.length?'Select an active team.':'No active teams yet. Create one first.';}).catch(()=>{status.textContent='Could not load teams. You can still play solo.';});}
+function back(dest) {
+  state.screen = dest;
+  render();
+}
+
+/* ============================================================
+   HUB
+   ============================================================ */
+function renderHub() {
+  const cleared = state.levelsCleared;
+  function statusOf(key, prevKey) {
+    if (cleared[key]) return `<span class="status-clear">✔ CLEARED</span>`;
+    if (!prevKey || cleared[prevKey]) return `<span class="status-open">▶ PLAY</span>`;
+    return `<span class="status-locked">🔒 LOCKED</span>`;
+  }
+  const l1Locked = false;
+  const l2Locked = !cleared.l1;
+  const l3Locked = !cleared.l2;
+
+  const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
@@ -1101,7 +724,7 @@
             Passwords are the keys to everything. In this module you'll learn to <b>spot</b> weak passwords, <b>upgrade</b> them, and understand why <b>personal info</b> makes terrible passwords.
           </p>
 
-          <div class="level-card ${l1Locked ? 'locked' : ''} ${cleared.l1 ? 'cleared' : ''}" id="card-l1">
+          <div class="level-card ${l1Locked ? 'locked':''} ${cleared.l1 ? 'cleared':''}" id="card-l1">
             <div class="level-accent mustard"></div>
             <div class="level-num">1</div>
             <div class="level-body">
@@ -1112,7 +735,7 @@
             <div class="level-status">${statusOf('l1', null)}</div>
           </div>
 
-          <div class="level-card ${l2Locked ? 'locked' : ''} ${cleared.l2 ? 'cleared' : ''}" id="card-l2">
+          <div class="level-card ${l2Locked ? 'locked':''} ${cleared.l2 ? 'cleared':''}" id="card-l2">
             <div class="level-accent teal"></div>
             <div class="level-num">2</div>
             <div class="level-body">
@@ -1123,7 +746,7 @@
             <div class="level-status">${statusOf('l2', 'l1')}</div>
           </div>
 
-          <div class="level-card ${l3Locked ? 'locked' : ''} ${cleared.l3 ? 'cleared' : ''}" id="card-l3">
+          <div class="level-card ${l3Locked ? 'locked':''} ${cleared.l3 ? 'cleared':''}" id="card-l3">
             <div class="level-accent burgundy"></div>
             <div class="level-num">3</div>
             <div class="level-body">
@@ -1143,42 +766,42 @@
     </div>
   `);
 
-      if (!l1Locked) wrap.querySelector('#card-l1').onclick = () => {
-        state.l1Index = 0; state.l1Score = 0; state.l1Phase = "guess"; state.l1UserChoice = null;
-        state.screen = "l1"; render();
-      };
-      if (!l2Locked) wrap.querySelector('#card-l2').onclick = () => {
-        state.l2Index = 0; state.l2Score = 0; state.l2Phase = "choose"; state.l2UserChoice = null;
-        state.screen = "l2"; render();
-      };
-      if (!l3Locked) wrap.querySelector('#card-l3').onclick = () => {
-        state.l3ProfileIndex = 0; state.l3PwIndex = 0; state.l3Score = 0; state.l3Attempts = 0;
-        state.l3SlotStates = L3_PROFILES[0].passwords.map(() => "pending");
-        state.l3Revealed = false;
-        state.screen = "l3"; render();
-      };
+  if (!l1Locked) wrap.querySelector('#card-l1').onclick = () => {
+    state.l1Index = 0; state.l1Score = 0; state.l1Phase = "guess"; state.l1UserChoice = null;
+    state.screen = "l1"; render();
+  };
+  if (!l2Locked) wrap.querySelector('#card-l2').onclick = () => {
+    state.l2Index = 0; state.l2Score = 0; state.l2Phase = "choose"; state.l2UserChoice = null;
+    state.screen = "l2"; render();
+  };
+  if (!l3Locked) wrap.querySelector('#card-l3').onclick = () => {
+    state.l3ProfileIndex = 0; state.l3PwIndex = 0; state.l3Score = 0; state.l3Attempts = 0;
+    state.l3SlotStates = L3_PROFILES[0].passwords.map(() => "pending");
+    state.l3Revealed = false;
+    state.screen = "l3"; render();
+  };
 
-      wrap.querySelector('#backBtn').onclick = () => { window.location.href = 'index.html'; };
-      return wrap;
-    }
+  wrap.querySelector('#backBtn').onclick = () => { window.location.href = 'index.html'; };
+  return wrap;
+}
 
-    /* ============================================================
-       LEVEL 1 — SPOT THE WEAK
-       ============================================================ */
-    function renderL1() {
-      const item = L1_PASSWORDS[state.l1Index];
-      const revealed = state.l1Phase === "reveal";
-      const isLast = state.l1Index >= L1_PASSWORDS.length - 1;
+/* ============================================================
+   LEVEL 1 — SPOT THE WEAK
+   ============================================================ */
+function renderL1() {
+  const item = L1_PASSWORDS[state.l1Index];
+  const revealed = state.l1Phase === "reveal";
+  const isLast = state.l1Index >= L1_PASSWORDS.length - 1;
 
-      // compute strength bar color
-      const s = item.strength;
-      const barColor = s < 30 ? '#B23B3B' : s < 60 ? '#D9A441' : '#3F7A4D';
-      const strengthLabel = s < 30 ? 'VERY WEAK' : s < 50 ? 'WEAK' : s < 75 ? 'MODERATE' : 'STRONG';
+  // compute strength bar color
+  const s = item.strength;
+  const barColor = s < 30 ? '#B23B3B' : s < 60 ? '#D9A441' : '#3F7A4D';
+  const strengthLabel = s < 30 ? 'VERY WEAK' : s < 50 ? 'WEAK' : s < 75 ? 'MODERATE' : 'STRONG';
 
-      let feedbackHtml = "";
-      if (revealed) {
-        const correct = (state.l1UserChoice === "weak") === (!item.isStrong);
-        feedbackHtml = `
+  let feedbackHtml = "";
+  if (revealed) {
+    const correct = (state.l1UserChoice === "weak") === (!item.isStrong);
+    feedbackHtml = `
       <div class="feedback-banner ${correct ? 'correct' : 'wrong'}">
         <div class="feedback-icon">${correct ? '✔' : '✘'}</div>
         <div>
@@ -1187,9 +810,9 @@
         </div>
       </div>
     `;
-      }
+  }
 
-      const wrap = el(`
+  const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
@@ -1237,75 +860,77 @@
     </div>
   `);
 
-      if (!revealed) {
-        const judge = (choice) => {
-          state.l1UserChoice = choice;
-          state.l1Phase = "reveal";
-          const correct = (choice === "weak") === (!item.isStrong);
-          if (correct) state.l1Score++;
-          render();
-        };
-        wrap.querySelector('#btnWeak').onclick = () => judge("weak");
-        wrap.querySelector('#btnStrong').onclick = () => judge("strong");
+  if (!revealed) {
+    const judge = (choice) => {
+      state.l1UserChoice = choice;
+      state.l1Phase = "reveal";
+      const correct = (choice === "weak") === (!item.isStrong);
+      if (correct) state.l1Score++;
+      render();
+    };
+    wrap.querySelector('#btnWeak').onclick = () => judge("weak");
+    wrap.querySelector('#btnStrong').onclick = () => judge("strong");
+  } else {
+    wrap.querySelector('#nextBtn').onclick = () => {
+      if (isLast) {
+        state.levelsCleared.l1 = true;
+        state.screen = "l2"; // auto-advance to L2 intro? No — go to hub
+        // go to ending for L1
+        state.screen = "hub";
+        // Actually let's show hub with l1 cleared so user sees progress
+        // But to feel rewarding let's go to l2 start
+        state.l2Index = 0; state.l2Score = 0; state.l2Phase = "choose"; state.l2UserChoice = null;
+        state.screen = "hub";
+        render();
       } else {
-        wrap.querySelector('#nextBtn').onclick = () => {
-          if (isLast) {
-            state.levelsCleared.l1 = true;
-            state.screen = "l2"; // auto-advance to L2 intro? No — go to hub
-            // go to ending for L1
-            state.screen = "hub";
-            // Actually let's show hub with l1 cleared so user sees progress
-            // But to feel rewarding let's go to l2 start
-            state.l2Index = 0; state.l2Score = 0; state.l2Phase = "choose"; state.l2UserChoice = null;
-            state.screen = "hub";
-            render();
-          } else {
-            state.l1Index++;
-            state.l1Phase = "guess";
-            state.l1UserChoice = null;
-            render();
-          }
-        };
+        state.l1Index++;
+        state.l1Phase = "guess";
+        state.l1UserChoice = null;
+        render();
       }
-      wrap.querySelector('#quitL1Btn').onclick = () => { state.screen = "hub"; render(); };
+    };
+  }
+  wrap.querySelector('#quitL1Btn').onclick = () => { state.screen = "hub"; render(); };
 
-      // animate bar after render
-      if (revealed) {
-        setTimeout(() => {
-          const bar = wrap.querySelector('#strengthBar');
-          if (bar) { bar.style.width = item.strength + '%'; }
-        }, 50);
-      }
+  // animate bar after render
+  if (revealed) {
+    setTimeout(() => {
+      const bar = wrap.querySelector('#strengthBar');
+      if (bar) { bar.style.width = item.strength + '%'; }
+    }, 50);
+  }
 
-      return wrap;
-    }
+  return wrap;
+}
 
-    /* ============================================================
-       LEVEL 2 — PASSWORD UPGRADER
-       ============================================================ */
-    function renderL2() {
-      const scenario = L2_SCENARIOS[state.l2Index];
-      const revealed = state.l2Phase === "reveal";
-      const isLast = state.l2Index >= L2_SCENARIOS.length - 1;
+/* ============================================================
+   LEVEL 2 — PASSWORD UPGRADER
+   ============================================================ */
+function renderL2() {
+  const scenario = L2_SCENARIOS[state.l2Index];
+  const revealed = state.l2Phase === "reveal";
+  const isLast = state.l2Index >= L2_SCENARIOS.length - 1;
 
-      let choicesHtml = scenario.choices.map(c => `
-    <div class="upgrade-choice ${revealed
-          ? (c.label === scenario.correct ? 'reveal-correct' : (c.label === state.l2UserChoice ? 'selected-wrong' : ''))
-          : ''
-        }" data-label="${c.label}">
-      <div class="badge-letter" style="${revealed && c.label === scenario.correct ? 'background:var(--good)' :
-          revealed && c.label === state.l2UserChoice && c.label !== scenario.correct ? 'background:var(--danger)' : ''
-        }">${c.label}</div>
+  let choicesHtml = scenario.choices.map(c => `
+    <div class="upgrade-choice ${
+      revealed
+        ? (c.label === scenario.correct ? 'reveal-correct' : (c.label === state.l2UserChoice ? 'selected-wrong' : ''))
+        : ''
+    }" data-label="${c.label}">
+      <div class="badge-letter" style="${
+        revealed && c.label === scenario.correct ? 'background:var(--good)' :
+        revealed && c.label === state.l2UserChoice && c.label !== scenario.correct ? 'background:var(--danger)' : ''
+      }">${c.label}</div>
       <span style="letter-spacing:2px; font-size:14px;">${c.text}</span>
       ${revealed && c.label === scenario.correct ? '<span style="margin-left:auto; color:var(--good); font-size:18px;">✔</span>' : ''}
       ${revealed && c.label === state.l2UserChoice && c.label !== scenario.correct ? '<span style="margin-left:auto; color:var(--danger); font-size:18px;">✘</span>' : ''}
     </div>
   `).join('');
 
-      let feedbackHtml = "";
-      if (revealed) {
-        const correct = state.l2UserChoice === scenario.correct;
-        feedbackHtml = `
+  let feedbackHtml = "";
+  if (revealed) {
+    const correct = state.l2UserChoice === scenario.correct;
+    feedbackHtml = `
       <div class="feedback-banner ${correct ? 'correct' : 'wrong'}">
         <div class="feedback-icon">${correct ? '✔' : '✘'}</div>
         <div>
@@ -1315,9 +940,9 @@
         </div>
       </div>
     `;
-      }
+  }
 
-      const wrap = el(`
+  const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
@@ -1358,62 +983,62 @@
     </div>
   `);
 
-      if (!revealed) {
-        wrap.querySelectorAll('.upgrade-choice').forEach(card => {
-          card.onclick = () => {
-            const label = card.getAttribute('data-label');
-            state.l2UserChoice = label;
-            state.l2Phase = "reveal";
-            if (label === scenario.correct) state.l2Score++;
-            render();
-          };
-        });
+  if (!revealed) {
+    wrap.querySelectorAll('.upgrade-choice').forEach(card => {
+      card.onclick = () => {
+        const label = card.getAttribute('data-label');
+        state.l2UserChoice = label;
+        state.l2Phase = "reveal";
+        if (label === scenario.correct) state.l2Score++;
+        render();
+      };
+    });
+  } else {
+    wrap.querySelector('#nextL2Btn').onclick = () => {
+      if (isLast) {
+        state.levelsCleared.l2 = true;
+        state.screen = "hub"; render();
       } else {
-        wrap.querySelector('#nextL2Btn').onclick = () => {
-          if (isLast) {
-            state.levelsCleared.l2 = true;
-            state.screen = "hub"; render();
-          } else {
-            state.l2Index++;
-            state.l2Phase = "choose";
-            state.l2UserChoice = null;
-            render();
-          }
-        };
+        state.l2Index++;
+        state.l2Phase = "choose";
+        state.l2UserChoice = null;
+        render();
       }
-      wrap.querySelector('#quitL2Btn').onclick = () => { state.screen = "hub"; render(); };
-      return wrap;
-    }
+    };
+  }
+  wrap.querySelector('#quitL2Btn').onclick = () => { state.screen = "hub"; render(); };
+  return wrap;
+}
 
-    /* ============================================================
-       LEVEL 3 — CRACK THE PASSWORD
-       ============================================================ */
-    function renderL3() {
-      const profile = L3_PROFILES[state.l3ProfileIndex];
-      const slots = state.l3SlotStates;
-      const allDone = slots.every(s => s === "solved" || s === "failed");
-      const isLastProfile = state.l3ProfileIndex >= L3_PROFILES.length - 1;
+/* ============================================================
+   LEVEL 3 — CRACK THE PASSWORD
+   ============================================================ */
+function renderL3() {
+  const profile = L3_PROFILES[state.l3ProfileIndex];
+  const slots = state.l3SlotStates;
+  const allDone = slots.every(s => s === "solved" || s === "failed");
+  const isLastProfile = state.l3ProfileIndex >= L3_PROFILES.length - 1;
 
-      let slotsHtml = profile.passwords.map((pw, i) => {
-        const slotState = slots[i]; // pending | solved | failed
-        const isCurrent = (slotState === "pending") && slots.slice(0, i).every(s => s !== "pending");
-        // Actually allow current slot = first pending
-        const firstPending = slots.findIndex(s => s === "pending");
-        const isActive = i === firstPending && slotState === "pending";
-        const pipsHtml = Array.from({ length: 3 }).map((_, p) => {
-          if (slotState === "solved") return `<div class="pip" style="background:var(--good); border-color:var(--good);"></div>`;
-          if (slotState === "failed") return `<div class="pip used"></div>`;
-          if (isActive) {
-            return `<div class="pip ${p < state.l3Attempts ? 'used' : 'empty'}"></div>`;
-          }
-          return `<div class="pip empty"></div>`;
-        }).join('');
+  let slotsHtml = profile.passwords.map((pw, i) => {
+    const slotState = slots[i]; // pending | solved | failed
+    const isCurrent = (slotState === "pending") && slots.slice(0, i).every(s => s !== "pending");
+    // Actually allow current slot = first pending
+    const firstPending = slots.findIndex(s => s === "pending");
+    const isActive = i === firstPending && slotState === "pending";
+    const pipsHtml = Array.from({length: 3}).map((_, p) => {
+      if (slotState === "solved") return `<div class="pip" style="background:var(--good); border-color:var(--good);"></div>`;
+      if (slotState === "failed") return `<div class="pip used"></div>`;
+      if (isActive) {
+        return `<div class="pip ${p < state.l3Attempts ? 'used' : 'empty'}"></div>`;
+      }
+      return `<div class="pip empty"></div>`;
+    }).join('');
 
-        let statusBadge = "";
-        if (slotState === "solved") statusBadge = `<span style="color:var(--good); font-weight:700; font-size:12px; letter-spacing:1px;">✔ CRACKED</span>`;
-        if (slotState === "failed") statusBadge = `<span style="color:var(--danger); font-weight:700; font-size:12px; letter-spacing:1px;">✘ REVEALED: <span style="font-family:'Space Mono';">${pw.answer}</span></span>`;
+    let statusBadge = "";
+    if (slotState === "solved") statusBadge = `<span style="color:var(--good); font-weight:700; font-size:12px; letter-spacing:1px;">✔ CRACKED</span>`;
+    if (slotState === "failed") statusBadge = `<span style="color:var(--danger); font-weight:700; font-size:12px; letter-spacing:1px;">✘ REVEALED: <span style="font-family:'Space Mono';">${pw.answer}</span></span>`;
 
-        return `
+    return `
       <div class="crack-slot ${slotState !== 'pending' ? slotState : ''}" id="slot-${i}">
         <div class="crack-slot-label">Password ${i + 1} of ${profile.passwords.length}</div>
         <div style="font-size:12px; font-style:italic; color:#666; margin-bottom:8px;">${pw.hint}</div>
@@ -1439,9 +1064,9 @@
         `}
       </div>
     `;
-      }).join('');
+  }).join('');
 
-      const wrap = el(`
+  const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
@@ -1464,7 +1089,7 @@
           </div>
 
           <div style="font-family:'Space Mono'; font-weight:700; font-size:12px; color:var(--burgundy); margin-bottom:14px; letter-spacing:1px;">
-            Guess the 3 passwords. You have <b>3 attempts</b> per password.
+            Guess the 3 passwords. You have <b>${MAX_L3_ATTEMPTS} attempts</b> per password.
           </div>
 
           <div class="crack-slots">
@@ -1479,7 +1104,7 @@
             </div>
             <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <div style="font-family:'Space Mono'; font-size:12px; color:#555;">
-                Cracked: <b>${slots.filter(s => s === 'solved').length}</b> / ${profile.passwords.length}
+                Cracked: <b>${slots.filter(s=>s==='solved').length}</b> / ${profile.passwords.length}
               </div>
               <button class="btn good" id="nextProfileBtn">
                 ${isLastProfile ? 'See Final Score →' : 'Next Profile →'}
@@ -1496,83 +1121,87 @@
     </div>
   `);
 
-      // Wire up guess buttons for active slots
-      const firstPending = slots.findIndex(s => s === "pending");
-      if (firstPending !== -1) {
-        const inputEl = wrap.querySelector(`#crackInput-${firstPending}`);
-        const btnEl = wrap.querySelector(`#crackBtn-${firstPending}`);
-        const msgEl = wrap.querySelector(`#crackMsg-${firstPending}`);
-        const pw = profile.passwords[firstPending];
+  // Wire up guess buttons for active slots
+  const firstPending = slots.findIndex(s => s === "pending");
+  if (firstPending !== -1) {
+    const inputEl = wrap.querySelector(`#crackInput-${firstPending}`);
+    const btnEl = wrap.querySelector(`#crackBtn-${firstPending}`);
+    const msgEl = wrap.querySelector(`#crackMsg-${firstPending}`);
+    const pw = profile.passwords[firstPending];
 
-        const submitGuess = () => {
-          const guess = inputEl.value.trim().toLowerCase();
-          if (!guess) return;
+    const submitGuess = () => {
+      const guess = inputEl.value.trim().toLowerCase();
+      if (!guess) return;
 
-          if (guess === pw.answer.toLowerCase()) {
-            slots[firstPending] = "solved";
-            state.l3Score++;
-            state.l3Attempts = 0;
-            render();
-          } else {
-            state.l3Attempts++;
-            if (state.l3Attempts >= 3) {
-              slots[firstPending] = "failed";
-              state.l3Attempts = 0;
-              render();
-            } else {
-              msgEl.textContent = `✘ Wrong! ${3 - state.l3Attempts} attempt${3 - state.l3Attempts === 1 ? '' : 's'} remaining.`;
-              inputEl.value = "";
-              // update pips visually
-              wrap.querySelectorAll(`#slot-${firstPending} .pip`).forEach((pip, p) => {
-                pip.className = 'pip ' + (p < state.l3Attempts ? 'used' : 'empty');
-              });
-            }
-          }
-        };
-
-        btnEl.onclick = submitGuess;
-        inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') submitGuess(); });
+      if (guess === pw.answer.toLowerCase()) {
+        slots[firstPending] = "solved";
+        state.l3Score++;
+        state.l3Attempts = 0;
+        render();
+      } else {
+        state.l3Attempts++;
+        if (state.l3Attempts >= MAX_L3_ATTEMPTS) {
+          slots[firstPending] = "failed";
+          state.l3Attempts = 0;
+          render();
+        } else {
+          const remaining = MAX_L3_ATTEMPTS - state.l3Attempts;
+          msgEl.textContent = `✘ Wrong! ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`;
+          inputEl.value = "";
+          // update pips visually
+          wrap.querySelectorAll(`#slot-${firstPending} .pip`).forEach((pip, p) => {
+            pip.className = 'pip ' + (p < state.l3Attempts ? 'used' : 'empty');
+          });
+        }
       }
+    };
 
-      if (allDone) {
-        wrap.querySelector('#nextProfileBtn').onclick = () => {
-          if (isLastProfile) {
-            state.levelsCleared.l3 = true;
-            state.screen = "ending"; render();
-          } else {
-            state.l3ProfileIndex++;
-            state.l3PwIndex = 0;
-            state.l3Attempts = 0;
-            state.l3SlotStates = L3_PROFILES[state.l3ProfileIndex].passwords.map(() => "pending");
-            render();
-          }
-        };
+    btnEl.onclick = submitGuess;
+    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') submitGuess(); });
+  }
+
+  if (allDone) {
+    wrap.querySelector('#nextProfileBtn').onclick = () => {
+      if (isLastProfile) {
+        state.levelsCleared.l3 = true;
+        state.screen = "ending"; render();
+      } else {
+        state.l3ProfileIndex++;
+        state.l3PwIndex = 0;
+        state.l3Attempts = 0;
+        state.l3SlotStates = L3_PROFILES[state.l3ProfileIndex].passwords.map(() => "pending");
+        render();
       }
-      wrap.querySelector('#quitL3Btn').onclick = () => { state.screen = "hub"; render(); };
-      return wrap;
-    }
+    };
+  }
+  wrap.querySelector('#quitL3Btn').onclick = () => { state.screen = "hub"; render(); };
+  return wrap;
+}
 
-    /* ============================================================
-       ENDING
-       ============================================================ */
-    function renderEnding() {
-      const l1Score = state.l1Score;
-      const l2Score = state.l2Score;
-      const l3Score = state.l3Score;
-      const total = l1Score + l2Score + l3Score;
-      const maxTotal = L1_PASSWORDS.length + L2_SCENARIOS.length + (L3_PROFILES.length * 3);
+/* ============================================================
+   ENDING
+   ============================================================ */
+function renderEnding() {
+  const l1Score = state.l1Score;
+  const l2Score = state.l2Score;
+  const l3Score = state.l3Score;
+  const total = l1Score + l2Score + l3Score;
+  const maxTotal = L1_PASSWORDS.length + L2_SCENARIOS.length + (L3_PROFILES.length * 3);
 
-      const pct = Math.round((total / maxTotal) * 100);
-      const grade = pct >= 90 ? "Password Pro 🏆" : pct >= 70 ? "Security Savvy 🛡️" : pct >= 50 ? "Getting There 📈" : "Keep Practising 🔐";
-      const msg = pct >= 90
-        ? "Exceptional! You spotted every trap, chose the best upgrades, and cracked the risky passwords. You're security-aware."
-        : pct >= 70
-          ? "Good work. You've got a solid grip on password security basics. Review the ones you missed."
-          : pct >= 50
-            ? "You understand some of the principles — keep practising to build strong habits."
-            : "Password security takes time to learn. Review the feedback and try again!";
+  const pct = Math.round((total / maxTotal) * 100);
+  const run={secureTeamName:state.teamName,secureScore:total,secureMax:maxTotal,scorePercent:pct,isSolo:state.isSolo,timestamp:new Date().toISOString()};
+  if(!state.anonymous)try{const runs=JSON.parse(localStorage.getItem('secureRuns')||'[]');runs.push(run);localStorage.setItem('secureRuns',JSON.stringify(runs));}catch(e){}
+  if(window.db&&window.firebaseUpdate&&state.teamKey)window.firebaseUpdate(window.firebaseRef(window.db,`secure_teams/${state.teamKey}`),{secureScore:total,secureMax:maxTotal,scorePercent:pct,completed:true,timestamp:run.timestamp}).catch(()=>{});
+  const grade = pct >= 90 ? "Password Pro 🏆" : pct >= 70 ? "Security Savvy 🛡️" : pct >= 50 ? "Getting There 📈" : "Keep Practising 🔐";
+  const msg = pct >= 90
+    ? "Exceptional! You spotted every trap, chose the best upgrades, and cracked the risky passwords. You're security-aware."
+    : pct >= 70
+    ? "Good work. You've got a solid grip on password security basics. Review the ones you missed."
+    : pct >= 50
+    ? "You understand some of the principles — keep practising to build strong habits."
+    : "Password security takes time to learn. Review the feedback and try again!";
 
-      const wrap = el(`
+  const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
@@ -1612,25 +1241,24 @@
     </div>
   `);
 
-      wrap.querySelector('#playAgainBtn').onclick = () => {
-        state.screen = "hub";
-        state.l1Index = 0; state.l1Score = 0; state.l1Phase = "guess"; state.l1UserChoice = null;
-        state.l2Index = 0; state.l2Score = 0; state.l2Phase = "choose"; state.l2UserChoice = null;
-        state.l3ProfileIndex = 0; state.l3PwIndex = 0; state.l3Score = 0; state.l3Attempts = 0;
-        state.l3SlotStates = L3_PROFILES[0].passwords.map(() => "pending");
-        state.levelsCleared = { l1: false, l2: false, l3: false };
-        render();
-      };
-      wrap.querySelector('#backToHubBtn').onclick = () => { window.location.href = 'index.html'; };
-      return wrap;
-    }
-
-    /* ============================================================
-       BOOT
-       ============================================================ */
+  wrap.querySelector('#playAgainBtn').onclick = () => {
+    state.screen = "registration";
+    state.l1Index = 0; state.l1Score = 0; state.l1Phase = "guess"; state.l1UserChoice = null;
+    state.l2Index = 0; state.l2Score = 0; state.l2Phase = "choose"; state.l2UserChoice = null;
+    state.l3ProfileIndex = 0; state.l3PwIndex = 0; state.l3Score = 0; state.l3Attempts = 0;
     state.l3SlotStates = L3_PROFILES[0].passwords.map(() => "pending");
+    state.levelsCleared = { l1: false, l2: false, l3: false };
     render();
-  </script>
-</body>
+  };
+  wrap.querySelector('#backToHubBtn').onclick = () => { window.location.href = 'index.html'; };
+  return wrap;
+}
 
+/* ============================================================
+   BOOT
+   ============================================================ */
+state.l3SlotStates = L3_PROFILES[0].passwords.map(() => "pending");
+render();
+</script>
+</body>
 </html>
