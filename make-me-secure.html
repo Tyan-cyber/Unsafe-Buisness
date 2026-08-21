@@ -12,6 +12,7 @@
   import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
   const app = initializeApp({apiKey:"AIzaSyApA-NIAWlKKG43XAwquM8hNpXUMXfOSog",authDomain:"unsafe-buiness.firebaseapp.com",databaseURL:"https://unsafe-buiness-default-rtdb.firebaseio.com",projectId:"unsafe-buiness",storageBucket:"unsafe-buiness.firebasestorage.app",messagingSenderId:"385683427722",appId:"1:385683427722:web:63db29017db39eaf503873"});
   window.db = getDatabase(app); window.firebasePush = push; window.firebaseRef = ref; window.firebaseSet = set; window.firebaseGet = get; window.firebaseUpdate = update;
+  if (typeof window.onSecureFirebaseInit === 'function') window.onSecureFirebaseInit();
 </script>
 <style>
   :root {
@@ -691,7 +692,7 @@ function renderRegistration() {
   wrap.querySelector('#secureBack').onclick=()=>{window.location.href='index.html';}; return wrap;
 }
 function saveSecureTeam(name,members,isSolo,done){if(window.db&&window.firebasePush&&window.firebaseSet){const teamRef=window.firebasePush(window.firebaseRef(window.db,'secure_teams'));state.teamKey=teamRef.key;window.firebaseSet(teamRef,{teamName:name+(isSolo?' (Solo)':''),teamMembers:members,isSolo,timestamp:new Date().toISOString()}).then(done).catch(done);}else done();}
-function loadSecureTeams(){const status=document.getElementById('secureJoinStatus');const select=document.getElementById('secureTeamSelect');if(!window.db||!window.firebaseGet){status.textContent='Database offline. Create a team or play solo.';return;}window.firebaseGet(window.firebaseRef(window.db,'secure_teams')).then(snapshot=>{secureTeams=snapshot.exists()?snapshot.val():{};select.innerHTML=Object.keys(secureTeams).filter(key=>!secureTeams[key].completed).map(key=>`<option value="${key}">${secureTeams[key].teamName||'Unnamed Team'}</option>`).join('');status.textContent=select.options.length?'Select an active team.':'No active teams yet. Create one first.';}).catch(()=>{status.textContent='Could not load teams. You can still play solo.';});}
+function loadSecureTeams(){const status=document.getElementById('secureJoinStatus');const select=document.getElementById('secureTeamSelect');if(!status||!select)return;if(!window.db||!window.firebaseGet){status.textContent='Database offline. Create a team or play solo.';return;}status.textContent='Connecting to database...';window.firebaseGet(window.firebaseRef(window.db,'secure_teams')).then(snapshot=>{secureTeams=snapshot.exists()?snapshot.val():{};select.innerHTML=Object.keys(secureTeams).filter(key=>!secureTeams[key].completed).map(key=>`<option value="${key}">${secureTeams[key].teamName||'Unnamed Team'}</option>`).join('');status.textContent=select.options.length?'Select an active team.':'No active teams yet. Create one first.';}).catch(()=>{status.textContent='Could not load teams. You can still play solo.';});}
 function back(dest) {
   state.screen = dest;
   render();
@@ -1258,6 +1259,9 @@ function renderEnding() {
    BOOT
    ============================================================ */
 state.l3SlotStates = L3_PROFILES[0].passwords.map(() => "pending");
+window.onSecureFirebaseInit = () => {
+  if (state.screen === 'registration') loadSecureTeams();
+};
 render();
 </script>
 </body>
