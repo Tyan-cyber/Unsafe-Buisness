@@ -655,8 +655,24 @@ const L3_PROFILES = [
 /* ============================================================
    STATE
    ============================================================ */
+let teamHandoff = null;
+try {
+  const storedHandoff = JSON.parse(sessionStorage.getItem('unsafeBusinessTeamHandoff') || 'null');
+  if (storedHandoff && typeof storedHandoff.teamName === 'string' && storedHandoff.teamName.trim()) {
+    teamHandoff = {
+      teamName: storedHandoff.teamName,
+      teamMembers: typeof storedHandoff.teamMembers === 'string' ? storedHandoff.teamMembers : '',
+      isSolo: storedHandoff.isSolo === true,
+      isAnonymous: storedHandoff.isAnonymous === true,
+      autoStart: storedHandoff.autoStart === true
+    };
+  }
+} catch (err) {
+  console.error('Could not read the current team handoff:', err);
+}
+
 const state = {
-  screen: "registration",   // registration | hub | l1 | l2 | l3 | ending
+  screen: teamHandoff && teamHandoff.autoStart ? "hub" : "registration",   // registration | hub | l1 | l2 | l3 | ending
   // L1
   l1Index: 0,
   l1Score: 0,
@@ -676,7 +692,7 @@ const state = {
   l3Revealed: false,
   teamKey: null,
   isSolo: true,
-  teamName: "Anonymous Solo",
+  teamName: teamHandoff && teamHandoff.autoStart ? teamHandoff.teamName : "Anonymous Solo",
   // overall
   levelsCleared: { l1: false, l2: false, l3: false }
 };
@@ -719,39 +735,19 @@ function secureTotalScore() {
 }
 
 let secureTeams = {};
-let teamHandoff = null;
-try {
-  const storedHandoff = JSON.parse(sessionStorage.getItem('unsafeBusinessTeamHandoff') || 'null');
-  if (storedHandoff && typeof storedHandoff.teamName === 'string' && storedHandoff.teamName.trim()) {
-    teamHandoff = {
-      teamName: storedHandoff.teamName,
-      teamMembers: typeof storedHandoff.teamMembers === 'string' ? storedHandoff.teamMembers : '',
-      isSolo: storedHandoff.isSolo === true,
-      isAnonymous: storedHandoff.isAnonymous === true,
-      autoStart: storedHandoff.autoStart === true
-    };
-  }
-} catch (err) {
-  console.error('Could not read the current team handoff:', err);
-}
 let handoffLaunchStarted = false;
 function startHandoffTeam() {
   if (!teamHandoff || !teamHandoff.autoStart || handoffLaunchStarted) return;
-  handoffLaunchStarted = true;
   state.isSolo = teamHandoff.isSolo;
   state.anonymous = teamHandoff.isAnonymous;
   state.teamName = teamHandoff.teamName;
   state.teamKey = null;
-  const start = () => { state.screen = 'hub'; render(); };
   if (teamHandoff.isAnonymous) {
-    start();
+    handoffLaunchStarted = true;
     return;
   }
-  if (!window.db || !window.firebasePush || !window.firebaseRef || !window.firebaseSet) {
-    alert('Database is offline, so this run will not be saved to the team leaderboard.');
-    start();
-    return;
-  }
+  if (!window.db || !window.firebasePush || !window.firebaseRef || !window.firebaseSet) return;
+  handoffLaunchStarted = true;
   const teamRef = window.firebasePush(window.firebaseRef(window.db, 'secure_teams'));
   state.teamKey = teamRef.key;
   window.firebaseSet(teamRef, {
@@ -759,10 +755,9 @@ function startHandoffTeam() {
     teamMembers: teamHandoff.teamMembers || teamHandoff.teamName,
     isSolo: teamHandoff.isSolo,
     timestamp: new Date().toISOString()
-  }).then(start).catch(err => {
+  }).catch(err => {
     state.teamKey = null;
     alert('Could not save this team for Make Me Secure: ' + err.message);
-    start();
   });
 }
 function renderRegistration() {
