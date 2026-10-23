@@ -124,6 +124,29 @@
   }
   .scene-header h2 { font-size: 18px; color: var(--paper); }
   .scene-header .ftag { font-size: 11px; opacity: 0.85; }
+  .secure-hud {
+    display: grid;
+    grid-template-columns: minmax(150px,1.1fr) minmax(150px,1.4fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--teal-dark);
+    color: var(--paper);
+    border-bottom: 2px solid var(--mustard);
+    font-size: 10px;
+    letter-spacing: .4px;
+  }
+  .secure-hud-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .secure-hud-brand img { width: 30px; height: 30px; object-fit: contain; flex: none; }
+  .secure-hud-cell { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .secure-hud-label { display: block; color: #c8d8c8; font-size: 8px; letter-spacing: 1px; margin-bottom: 3px; }
+  .secure-hud-value { font-weight: 700; }
+  .secure-hud-stat { padding: 6px 9px; border: 1px solid rgba(244,238,221,.35); border-radius: 4px; text-align: center; white-space: nowrap; }
+  .secure-hud-stat .secure-hud-value { font-size: 11px; }
+  .crt-inner:has(> .secure-hud) > .rec-tag { display: none; }
+  @media (max-width: 620px) {
+    .secure-hud { grid-template-columns: 1fr 1fr; gap: 8px; }
+  }
   .progress-pill {
     background: rgba(0,0,0,0.25);
     padding: 5px 10px; border-radius: 20px;
@@ -437,7 +460,6 @@
 </style>
 </head>
 <body>
-<img src="Icon - Red.png" alt="Logo" style="position:fixed; top:20px; left:20px; width:60px; height:auto; z-index:100;">
 <div id="app">
   <div class="stage" id="stage"></div>
 </div>
@@ -679,13 +701,137 @@ function render() {
   if (state.screen === "ending") stage.appendChild(renderEnding());
 }
 
+function secureHudText(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+}
+function renderSecureHud(mission, progress, score) {
+  return `<div class="secure-hud">
+    <div class="secure-hud-brand"><img src="Icon - Red.png" alt=""><div class="secure-hud-cell"><span class="secure-hud-label">TEAM</span><span class="secure-hud-value">${secureHudText(state.teamName || 'Inspector')}</span></div></div>
+    <div class="secure-hud-cell"><span class="secure-hud-label">CURRENT MISSION</span><span class="secure-hud-value">${secureHudText(mission)}</span></div>
+    <div class="secure-hud-stat"><span class="secure-hud-label">PROGRESS</span><span class="secure-hud-value">${secureHudText(progress)}</span></div>
+    <div class="secure-hud-stat"><span class="secure-hud-label">SCORE</span><span class="secure-hud-value">${secureHudText(score)}</span></div>
+  </div>`;
+}
+function secureTotalScore() {
+  return state.l1Score + state.l2Score + state.l3Score;
+}
+
 let secureTeams = {};
+let teamHandoff = null;
+try {
+  const storedHandoff = JSON.parse(sessionStorage.getItem('unsafeBusinessTeamHandoff') || 'null');
+  if (storedHandoff && typeof storedHandoff.teamName === 'string' && storedHandoff.teamName.trim()) {
+    teamHandoff = {
+      teamName: storedHandoff.teamName,
+      teamMembers: typeof storedHandoff.teamMembers === 'string' ? storedHandoff.teamMembers : '',
+      isSolo: storedHandoff.isSolo === true,
+      isAnonymous: storedHandoff.isAnonymous === true,
+      autoStart: storedHandoff.autoStart === true
+    };
+  }
+} catch (err) {
+  console.error('Could not read the current team handoff:', err);
+}
+let handoffLaunchStarted = false;
+function startHandoffTeam() {
+  if (!teamHandoff || !teamHandoff.autoStart || handoffLaunchStarted) return;
+  handoffLaunchStarted = true;
+  state.isSolo = teamHandoff.isSolo;
+  state.anonymous = teamHandoff.isAnonymous;
+  state.teamName = teamHandoff.teamName;
+  state.teamKey = null;
+  const start = () => { state.screen = 'hub'; render(); };
+  if (teamHandoff.isAnonymous) {
+    start();
+    return;
+  }
+  if (!window.db || !window.firebasePush || !window.firebaseRef || !window.firebaseSet) {
+    alert('Database is offline, so this run will not be saved to the team leaderboard.');
+    start();
+    return;
+  }
+  const teamRef = window.firebasePush(window.firebaseRef(window.db, 'secure_teams'));
+  state.teamKey = teamRef.key;
+  window.firebaseSet(teamRef, {
+    teamName: teamHandoff.teamName,
+    teamMembers: teamHandoff.teamMembers || teamHandoff.teamName,
+    isSolo: teamHandoff.isSolo,
+    timestamp: new Date().toISOString()
+  }).then(start).catch(err => {
+    state.teamKey = null;
+    alert('Could not save this team for Make Me Secure: ' + err.message);
+    start();
+  });
+}
 function renderRegistration() {
   const wrap = el(`<div class="crt-frame"><div class="crt-inner"><div class="rec-tag"><span class="rec-dot"></span>REC</div><div class="marquee"><h1>Make Me Secure</h1><div class="sub">CHOOSE YOUR TRAINING MODE</div></div><div class="title-screen" style="text-align:left; max-width:460px; margin:0 auto; padding-top:24px;"><div class="reg-options"><div class="reg-tab active" id="secureSoloTab">Play Solo</div><div class="reg-tab" id="secureJoinTab">Join a Team</div><div class="reg-tab" id="secureCreateTab">New Team</div></div><div class="reg-panel active" id="secureSoloPanel"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Your Name (Optional)</label><input type="text" id="secureSoloName" placeholder="e.g. Agent Smith" style="width:100%;padding:10px;margin-bottom:12px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:24px;cursor:pointer;font-weight:bold;"><input type="checkbox" id="secureSoloAnon" style="width:16px;height:16px;accent-color:var(--mustard);">Play anonymously (don't save to leaderboard)</label><div style="text-align:center;"><button class="btn" id="secureStartSolo">Start Solo Training</button></div></div><div class="reg-panel" id="secureJoinPanel"><div id="secureJoinStatus" style="font-size:13px;margin-bottom:16px;font-style:italic;color:#555;">Connecting to database...</div><div id="secureJoinContent"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Select Team</label><select id="secureTeamSelect" class="select-input"></select><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Your Name</label><input type="text" id="secureJoinName" placeholder="e.g. Alice" style="width:100%;padding:10px;margin-bottom:24px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><div style="text-align:center;"><button class="btn" id="secureJoin">Join &amp; Start</button></div></div></div><div class="reg-panel" id="secureCreatePanel"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Team Name</label><input id="secureTeamName" type="text" placeholder="e.g. The Cyber Sleuths" style="width:100%;padding:10px;margin-bottom:16px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><label style="display:block;font-weight:bold;margin-bottom:8px;font-size:14px;">Team Members (comma separated)</label><input id="secureTeamMembers" type="text" placeholder="e.g. Alice, Bob, Charlie" style="width:100%;padding:10px;margin-bottom:24px;border:2px solid var(--ink);border-radius:4px;font-family:'Space Mono';font-size:14px;"><div style="text-align:center;"><button class="btn" id="secureCreate">Register &amp; Start</button></div></div><div style="margin-top:16px;text-align:center;"><button class="btn secondary small" id="secureBack">← Back to Hub</button></div></div><div class="timestamp">MAKE ME SECURE — REGISTRATION</div></div></div>`);
-  const panels={Solo:[wrap.querySelector('#secureSoloTab'),wrap.querySelector('#secureSoloPanel')],Join:[wrap.querySelector('#secureJoinTab'),wrap.querySelector('#secureJoinPanel')],Create:[wrap.querySelector('#secureCreateTab'),wrap.querySelector('#secureCreatePanel')]};
+  let continueTab = null;
+  let continuePanel = null;
+  let continueButton = null;
+  if (teamHandoff) {
+    continueTab = document.createElement('div');
+    continueTab.className = 'reg-tab';
+    continueTab.textContent = 'Continue Team';
+    wrap.querySelector('.reg-options').insertBefore(continueTab, wrap.querySelector('#secureJoinTab'));
+
+    continuePanel = document.createElement('div');
+    continuePanel.className = 'reg-panel';
+    const teamLabel = document.createElement('p');
+    teamLabel.style.cssText = 'font-size:13px;line-height:1.6;';
+    teamLabel.textContent = `Continue with your current team: ${teamHandoff.teamName}`;
+    const membersLabel = document.createElement('p');
+    membersLabel.style.cssText = 'font-size:12px;color:#555;';
+    membersLabel.textContent = teamHandoff.teamMembers ? `Members: ${teamHandoff.teamMembers}` : '';
+    const buttonWrap = document.createElement('div');
+    buttonWrap.style.textAlign = 'center';
+    continueButton = document.createElement('button');
+    continueButton.className = 'btn';
+    continueButton.textContent = 'Continue with This Team';
+    buttonWrap.appendChild(continueButton);
+    continuePanel.append(teamLabel, membersLabel, buttonWrap);
+    wrap.querySelector('#secureSoloPanel').before(continuePanel);
+  }
+  const panels={
+    Solo:[wrap.querySelector('#secureSoloTab'),wrap.querySelector('#secureSoloPanel')],
+    ...(teamHandoff ? {Continue:[continueTab,continuePanel]} : {}),
+    Join:[wrap.querySelector('#secureJoinTab'),wrap.querySelector('#secureJoinPanel')],
+    Create:[wrap.querySelector('#secureCreateTab'),wrap.querySelector('#secureCreatePanel')]
+  };
   const switchMode=mode=>Object.entries(panels).forEach(([key,pair])=>{pair[0].classList.toggle('active',key===mode);pair[1].classList.toggle('active',key===mode);});
   panels.Solo[0].onclick=()=>switchMode('Solo'); panels.Join[0].onclick=()=>{switchMode('Join');loadSecureTeams();}; panels.Create[0].onclick=()=>switchMode('Create');
   const start=()=>{state.screen='hub';render();};
+  if (continueButton) {
+    continueTab.onclick=()=>switchMode('Continue');
+    continueButton.onclick=()=>{
+      state.isSolo=teamHandoff.isSolo;
+      state.anonymous=teamHandoff.isAnonymous;
+      state.teamName=teamHandoff.teamName;
+      state.teamKey=null;
+      if(teamHandoff.isAnonymous){start();return;}
+      if(!window.db||!window.firebasePush||!window.firebaseRef||!window.firebaseSet){
+        alert('Database is offline, so this run will not be saved to the team leaderboard.');
+        start();
+        return;
+      }
+      continueButton.disabled=true;
+      continueButton.textContent='Starting...';
+      const teamRef=window.firebasePush(window.firebaseRef(window.db,'secure_teams'));
+      state.teamKey=teamRef.key;
+      window.firebaseSet(teamRef,{
+        teamName:teamHandoff.teamName,
+        teamMembers:teamHandoff.teamMembers||teamHandoff.teamName,
+        isSolo:teamHandoff.isSolo,
+        timestamp:new Date().toISOString()
+      }).then(start).catch(err=>{
+        state.teamKey=null;
+        continueButton.disabled=false;
+        continueButton.textContent='Continue with This Team';
+        alert('Could not save this team for Make Me Secure: '+err.message);
+      });
+    };
+  }
   wrap.querySelector('#secureStartSolo').onclick=()=>{const name=wrap.querySelector('#secureSoloName').value.trim();state.isSolo=true;state.anonymous=wrap.querySelector('#secureSoloAnon').checked;state.teamName=name?`${name} (Solo)`:'Anonymous Solo';state.teamKey=null;if(!state.anonymous&&name)saveSecureTeam(name,name,true,start);else start();};
   wrap.querySelector('#secureCreate').onclick=()=>{const name=wrap.querySelector('#secureTeamName').value.trim();const members=wrap.querySelector('#secureTeamMembers').value.trim();if(!name||!members)return alert('Please enter a team name and members.');state.isSolo=false;state.teamName=name;saveSecureTeam(name,members,false,start);};
   wrap.querySelector('#secureJoin').onclick=()=>{const key=wrap.querySelector('#secureTeamSelect').value;const name=wrap.querySelector('#secureJoinName').value.trim();if(!name||!secureTeams[key])return alert('Choose a team and enter your name.');state.isSolo=false;state.teamKey=key;state.teamName=secureTeams[key].teamName||'Team';const members=secureTeams[key].teamMembers||'';if(window.db&&window.firebaseUpdate)window.firebaseUpdate(window.firebaseRef(window.db,`secure_teams/${key}`),{teamMembers:members?`${members}, ${name}`:name}).then(start).catch(start);else start();};
@@ -716,6 +862,7 @@ function renderHub() {
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderSecureHud(state.levelsCleared.l1 ? (state.levelsCleared.l2 ? 'Crack It' : 'Upgrade It') : 'Spot the Weak', `${Object.values(state.levelsCleared).filter(Boolean).length}/3 levels`, secureTotalScore())}
         <div class="marquee">
           <h1>Make Me Secure</h1>
           <div class="sub">PASSWORD SECURITY TRAINING — 3 LEVELS</div>
@@ -782,7 +929,7 @@ function renderHub() {
     state.screen = "l3"; render();
   };
 
-  wrap.querySelector('#backBtn').onclick = () => { window.location.href = 'index.html'; };
+  wrap.querySelector('#backBtn').onclick = () => { window.location.href = 'index.html?map=1'; };
   return wrap;
 }
 
@@ -817,6 +964,7 @@ function renderL1() {
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderSecureHud('Spot the Weak', `${state.l1Index + 1}/${L1_PASSWORDS.length} passwords`, secureTotalScore())}
         <div class="scene-header">
           <div>
             <h2>Level 1 — Spot the Weak</h2>
@@ -947,6 +1095,7 @@ function renderL2() {
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderSecureHud('Upgrade It', `${state.l2Index + 1}/${L2_SCENARIOS.length} passwords`, secureTotalScore())}
         <div class="scene-header">
           <div>
             <h2>Level 2 — Upgrade It</h2>
@@ -1019,6 +1168,8 @@ function renderL3() {
   const slots = state.l3SlotStates;
   const allDone = slots.every(s => s === "solved" || s === "failed");
   const isLastProfile = state.l3ProfileIndex >= L3_PROFILES.length - 1;
+  const completedPasswords = L3_PROFILES.slice(0, state.l3ProfileIndex).reduce((count, item) => count + item.passwords.length, 0) + slots.filter(slot => slot !== "pending").length;
+  const totalPasswords = L3_PROFILES.reduce((count, item) => count + item.passwords.length, 0);
 
   let slotsHtml = profile.passwords.map((pw, i) => {
     const slotState = slots[i]; // pending | solved | failed
@@ -1071,6 +1222,7 @@ function renderL3() {
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderSecureHud('Crack It', `${completedPasswords}/${totalPasswords} passwords`, secureTotalScore())}
         <div class="scene-header">
           <div>
             <h2>Level 3 — Crack It</h2>
@@ -1206,6 +1358,7 @@ function renderEnding() {
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderSecureHud('Training Complete', `${maxTotal}/${maxTotal} challenges`, `${total}/${maxTotal}`)}
         <div class="marquee">
           <h1>Training Complete!</h1>
           <div class="sub">MAKE ME SECURE — FINAL RESULTS</div>
@@ -1251,7 +1404,7 @@ function renderEnding() {
     state.levelsCleared = { l1: false, l2: false, l3: false };
     render();
   };
-  wrap.querySelector('#backToHubBtn').onclick = () => { window.location.href = 'index.html'; };
+  wrap.querySelector('#backToHubBtn').onclick = () => { window.location.href = 'index.html?map=1'; };
   return wrap;
 }
 
@@ -1261,6 +1414,7 @@ function renderEnding() {
 state.l3SlotStates = L3_PROFILES[0].passwords.map(() => "pending");
 window.onSecureFirebaseInit = () => {
   if (state.screen === 'registration') loadSecureTeams();
+  startHandoffTeam();
 };
 render();
 </script>

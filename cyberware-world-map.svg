@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960" role="img" aria-labelledby="title description">
+  <title id="title">CyberWare HQ — Training World Map</title>
+  <desc id="description">A colorful illustrated map with Catch a Fish cybersecurity training by the sea, an unsafe business downtown, and password security training in the suburbs, connected by a winding road.</desc>
+  <defs>
+    <linearGradient id="grass" x2="0" y2="1">
+      <stop offset="0" stop-color="#b9df9b"/>
+      <stop offset="1" stop-color="#8fc77e"/>
+    </linearGradient>
+    <linearGradient id="sea" x2="0" y2="1">
+      <stop offset="0" stop-color="#74c9dc"/>
+      <stop offset="1" stop-color="#3c9fca"/>
+    </linearGradient>
+    <linearGradient id="road" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6dfac"/>
+      <stop offset="1" stop-color="#eacb8d"/>
+    </linearGradient>
+    <pattern id="water-lines" width="92" height="46" patternUnits="userSpaceOnUse">
+      <path d="M8 18c10-8 20-8 30 0s20 8 30 0 20-8 30 0" fill="none" stroke="#d8f6ef" stroke-width="4" stroke-linecap="round" opacity=".56"/>
+    </pattern>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="9" stdDeviation="0" flood-color="#28435a" flood-opacity=".22"/>
+    </filter>
+    <style>
+      .ink{stroke:#28354c;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+      .label{font-family:Arial,sans-serif;font-weight:900;letter-spacing:2px;fill:#28354c}
+      .small{font-family:Arial,sans-serif;font-weight:700;letter-spacing:1px;fill:#4a5664}
+    </style>
+  </defs>
+
+  <!-- Map board -->
+  <rect width="1440" height="960" rx="44" fill="#fff3d9"/>
+  <rect x="18" y="18" width="1404" height="924" rx="34" fill="url(#grass)" class="ink"/>
+  <path d="M22 62Q20 32 58 22h720v920H56q-34 0-34-36z" fill="url(#sea)"/>
+  <path d="M22 62Q20 32 58 22h720v920H56q-34 0-34-36z" fill="url(#water-lines)" opacity=".8"/>
+
+  <!-- Coast -->
+  <path d="M704 20c-48 58 40 86-7 144s23 88-17 147 40 77 0 137 24 76-13 131 18 94-16 139 26 88-23 143 9 66 4 97h111V20z" fill="#e9dfa8" stroke="#678d66" stroke-width="9"/>
+  <path d="M724 22c-42 59 40 86-7 145s23 85-16 146 38 77-1 138 24 74-12 131 18 91-16 139 24 89-23 144 8 65 5 94" fill="none" stroke="#fff1ca" stroke-width="16" stroke-linecap="round" stroke-dasharray="2 24"/>
+
+  <!-- Parks and city blocks -->
+  <path d="M835 64h535v230H835z" fill="#a9d888" opacity=".62"/>
+  <path d="M843 690h525v201H843z" fill="#a9d888" opacity=".7"/>
+  <g fill="#77b86d" stroke="#4f8f58" stroke-width="5">
+    <circle cx="890" cy="112" r="31"/><circle cx="941" cy="113" r="26"/><circle cx="1304" cy="124" r="34"/>
+    <circle cx="1346" cy="171" r="26"/><circle cx="868" cy="823" r="34"/><circle cx="1321" cy="817" r="31"/>
+    <circle cx="1275" cy="860" r="25"/><circle cx="925" cy="853" r="23"/>
+  </g>
+  <g fill="#d7edaa">
+    <circle cx="883" cy="105" r="10"/><circle cx="1297" cy="116" r="11"/><circle cx="861" cy="813" r="11"/><circle cx="1313" cy="806" r="10"/>
+  </g>
+
+  <!-- Connecting streets -->
+  <g fill="none" stroke="#fff0cf" stroke-width="35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M500 236C625 250 686 315 802 345s139 97 220 111 151 44 177 126-101 136-202 132-177 28-226 96"/>
+  </g>
+  <g fill="none" stroke="#d3a963" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 18">
+    <path d="M500 236C625 250 686 315 802 345s139 97 220 111 151 44 177 126-101 136-202 132-177 28-226 96"/>
+  </g>
+
+  <!-- Downtown street grid -->
+  <g fill="none" stroke="#f4e8c7" stroke-width="22" opacity=".95">
+    <path d="M860 298v369M1012 294v383M1165 300v370M1314 300v370"/>
+    <path d="M828 336h550M825 443h554M826 553h551M825 635h552"/>
+  </g>
+  <g fill="#dfca9b">
+    <rect x="843" y="352" width="54" height="72" rx="6"/><rect x="927" y="352" width="62" height="72" rx="6"/>
+    <rect x="1031" y="352" width="104" height="72" rx="6"/><rect x="1181" y="352" width="111" height="72" rx="6"/>
+    <rect x="844" y="463" width="145" height="76" rx="6"/><rect x="1030" y="463" width="104" height="76" rx="6"/>
+    <rect x="1181" y="463" width="110" height="76" rx="6"/><rect x="844" y="570" width="145" height="49" rx="6"/>
+    <rect x="1030" y="570" width="104" height="49" rx="6"/><rect x="1181" y="570" width="110" height="49" rx="6"/>
+  </g>
+
+  <!-- Downtown buildings -->
+  <g class="ink" filter="url(#shadow)">
+    <path d="M955 249h132v92H955z" fill="#f7c65f"/>
+    <path d="M1102 201h124v140h-124z" fill="#e87e67"/>
+    <path d="M1237 259h91v82h-91z" fill="#80bdd1"/>
+    <path d="M987 155h53v94h-53z" fill="#8d9ed1"/>
+    <path d="M1060 121h73v80h-73z" fill="#78bd9d"/>
+  </g>
+  <g fill="#fff1cb" stroke="#28354c" stroke-width="4">
+    <rect x="970" y="269" width="22" height="22" rx="3"/><rect x="1010" y="269" width="22" height="22" rx="3"/><rect x="1050" y="269" width="22" height="22" rx="3"/>
+    <rect x="1119" y="221" width="24" height="22" rx="3"/><rect x="1161" y="221" width="24" height="22" rx="3"/>
+    <rect x="1119" y="263" width="24" height="22" rx="3"/><rect x="1161" y="263" width="24" height="22" rx="3"/>
+    <rect x="1254" y="278" width="22" height="20" rx="3"/><rect x="1290" y="278" width="22" height="20" rx="3"/>
+  </g>
+  <!-- Unsafe Business HQ -->
+  <g filter="url(#shadow)" class="ink">
+    <path d="M1009 429h142v184h-142z" fill="#fbf3df"/>
+    <path d="M994 429h172v23H994z" fill="#354765"/>
+    <path d="M1029 464h102v16h-102z" fill="#354765"/>
+    <path d="M1029 493h34v40h-34zM1097 493h34v40h-34zM1029 550h34v40h-34zM1097 550h34v40h-34z" fill="#79c5d6"/>
+    <path d="M1074 553h25v60h-25z" fill="#f0c35e"/>
+  </g>
+  <rect x="1053" y="390" width="54" height="38" rx="10" fill="#ef6b63" class="ink"/>
+  <text x="1080" y="416" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="900" fill="#fff">HQ</text>
+
+  <!-- Suburban homes and gardens -->
+  <g class="ink" filter="url(#shadow)">
+    <path d="M977 718l73-59 73 59v91H977z" fill="#f6d276"/>
+    <path d="M956 721l94-76 94 76-17 19-77-62-77 62z" fill="#d96d63"/>
+    <path d="M1000 753h34v56h-34zM1066 746h38v31h-38z" fill="#82c8d5"/>
+    <path d="M1159 760l63-50 63 50v71h-126z" fill="#f2a269"/>
+    <path d="M1142 763l80-66 80 66-15 16-65-53-65 53z" fill="#667caa"/>
+    <path d="M1180 789h30v42h-30zM1233 779h34v27h-34z" fill="#82c8d5"/>
+    <path d="M1279 744l47-37 47 37v63h-94z" fill="#bbd47c"/>
+    <path d="M1267 746l59-49 59 49-12 14-47-39-47 39z" fill="#df8667"/>
+  </g>
+  <g class="ink">
+    <rect x="932" y="794" width="23" height="54" rx="7" fill="#9e6947"/><circle cx="944" cy="782" r="35" fill="#6eb26c"/>
+    <rect x="1370" y="782" width="22" height="57" rx="7" fill="#9e6947"/><circle cx="1380" cy="768" r="35" fill="#6eb26c"/>
+  </g>
+  <path d="M957 867q47-24 94 0t94 0 94 0 94 0 94 0" fill="none" stroke="#5d9d59" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Coastline pier and phishing investigation -->
+  <path d="M247 298h279v23H247z" fill="#a9764a" class="ink"/>
+  <path d="M277 319v85M334 319v85M392 319v85M450 319v85M508 319v85" stroke="#795538" stroke-width="12" stroke-linecap="round"/>
+  <g class="ink" filter="url(#shadow)">
+    <path d="M308 244h158l-24 53H337z" fill="#f6f0da"/>
+    <path d="M360 210h72v34h-72z" fill="#f27568"/>
+    <path d="M385 174h14v36h-14z" fill="#fff0c9"/>
+    <path d="M368 205l23-23 22 23z" fill="#fff0c9"/>
+  </g>
+  <path d="M319 298q70 28 139 0" fill="none" stroke="#d26b58" stroke-width="13" stroke-linecap="round"/>
+  <path d="M278 417q75-26 145 0t139 0" fill="none" stroke="#fff3d9" stroke-width="7" stroke-linecap="round" opacity=".9"/>
+  <g fill="#fff" opacity=".84">
+    <path d="M92 360q20-15 40 0-20 15-40 0zm0 0-15-13v26z"/><circle cx="116" cy="358" r="3" fill="#28354c"/>
+    <path d="M157 484q19-14 38 0-19 14-38 0zm0 0-14-12v24z"/><circle cx="180" cy="482" r="3" fill="#28354c"/>
+    <path d="M555 460q18-13 36 0-18 13-36 0zm0 0-13-11v22z"/><circle cx="577" cy="458" r="3" fill="#28354c"/>
+  </g>
+  <!-- Phishing case-file marker -->
+  <g filter="url(#shadow)" class="ink">
+    <rect x="289" y="119" width="178" height="104" rx="17" fill="#fff4dc"/>
+    <path d="M327 154h99v54h-99z" fill="#f1d39a"/>
+    <path d="M327 154l49 35 50-35" fill="none" stroke="#52677f" stroke-width="8"/>
+    <circle cx="317" cy="145" r="20" fill="#ef7064"/>
+  </g>
+  <path d="M309 139v18m0 11v2" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Route markers -->
+  <g class="ink" filter="url(#shadow)">
+    <circle cx="531" cy="237" r="35" fill="#ef7064"/><circle cx="882" cy="431" r="35" fill="#59b8cb"/>
+    <circle cx="1185" cy="706" r="35" fill="#f0bf4f"/>
+  </g>
+  <g fill="#fff" font-family="Arial,sans-serif" font-size="26" font-weight="900" text-anchor="middle">
+    <text x="531" y="246">1</text><text x="882" y="440">2</text><text x="1185" y="715">3</text>
+  </g>
+
+  <!-- Area title plaques -->
+  <g filter="url(#shadow)">
+    <rect x="65" y="70" width="430" height="68" rx="20" fill="#fff4dc" class="ink"/>
+    <rect x="817" y="69" width="516" height="66" rx="20" fill="#fff4dc" class="ink"/>
+    <rect x="1003" y="874" width="331" height="52" rx="18" fill="#fff4dc" class="ink"/>
+  </g>
+  <text x="280" y="113" text-anchor="middle" class="label" font-size="24">COASTAL CASE FILES</text>
+  <text x="1075" y="111" text-anchor="middle" class="label" font-size="23">DOWNTOWN · UNSAFE BUSINESS</text>
+  <text x="1168" y="908" text-anchor="middle" class="label" font-size="19">MAKE ME SECURE · SUBURBS</text>
+
+  <!-- Playful area landmarks -->
+  <g class="ink">
+    <path d="M90 714h119v91H90z" fill="#fff1ce"/>
+    <path d="M80 715l69-56 70 56-12 17-58-46-57 46z" fill="#e97866"/>
+    <path d="M111 754h32v51h-32zM159 747h32v28h-32z" fill="#82c8d5"/>
+    <rect x="125" y="692" width="49" height="28" rx="8" fill="#f2bd52"/>
+  </g>
+  <text x="149" y="711" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="900" fill="#28354c">SAFE?</text>
+
+  <!-- Floating clouds, birds, and route sign -->
+  <g fill="#fff7e6" stroke="#28354c" stroke-width="5">
+    <path d="M542 90c0-18 15-31 33-31 13 0 24 7 29 18 6-8 15-13 26-13 18 0 33 15 33 33h-121z"/>
+    <path d="M688 712c0-14 11-25 25-25 10 0 19 5 23 14 5-7 13-10 21-10 15 0 27 12 27 27h-96z"/>
+  </g>
+  <path d="M620 179q18-22 36 0m17 0q18-22 36 0" fill="none" stroke="#28354c" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Bottom legend -->
+  <rect x="59" y="872" width="635" height="55" rx="18" fill="#fff4dc" class="ink"/>
+  <circle cx="91" cy="899" r="13" fill="#ef7064" stroke="#28354c" stroke-width="4"/>
+  <text x="117" y="906" class="small" font-size="15">CATCH A FISH · BY THE SEA</text>
+  <path d="M378 899h44" stroke="#eacb8d" stroke-width="10" stroke-linecap="round"/>
+  <text x="436" y="906" class="small" font-size="14">FOLLOW THE CASE TRAIL</text>
+</svg>

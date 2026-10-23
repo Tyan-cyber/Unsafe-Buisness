@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="220" viewBox="0 0 260 220" role="img" aria-labelledby="title description">
+  <title id="title">Fisherman casting a line</title>
+  <desc id="description">A friendly original cartoon fisherman in a yellow rain hat and teal jacket casts a fishing rod toward the sea.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="150%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#17283b" flood-opacity=".24"/>
+    </filter>
+  </defs>
+  <g stroke="#263149" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#shadow)">
+    <path d="M139 72 242 13" fill="none" stroke="#80502d" stroke-width="8"/>
+    <path d="M238 15 252 8" fill="none" stroke="#d9a441" stroke-width="4"/>
+    <path d="M106 77q9-17 29-12 17 5 16 25l-6 24-37-3-9-18z" fill="#e9b18b"/>
+    <path d="M103 78q12-22 37-14l8 13-45 5z" fill="#f0c94c"/>
+    <path d="M96 79q24-9 55-3l4 9q-33 6-61 1z" fill="#d9a441"/>
+    <path d="M115 99q8 5 16 0" fill="none" stroke="#8d5143" stroke-width="3"/>
+    <circle cx="116" cy="88" r="2.5" fill="#263149" stroke="none"/>
+    <circle cx="137" cy="86" r="2.5" fill="#263149" stroke="none"/>
+    <path d="M100 111q20-10 41 1l19 50-61 5-14-34z" fill="#2f6b67"/>
+    <path d="M103 116 78 137l-15-18-9 8 18 30q5 7 13 1l22-17" fill="#e9b18b"/>
+    <path d="M142 116 158 98l-20-12 5-11 32 14q8 4 4 12l-23 32" fill="#e9b18b"/>
+    <path d="M98 162 94 197l-17 8q-6 4 0 8h37q7-3 4-11l2-39" fill="#324c66"/>
+    <path d="M135 162 144 195l-11 12q-5 6 2 8h35q7-3 2-10l-13-44" fill="#324c66"/>
+    <path d="M75 208h42M131 210h40" fill="none" stroke="#263149" stroke-width="6"/>
+    <path d="M90 133q22 9 48 0" fill="none" stroke="#d9a441" stroke-width="5"/>
+    <path d="M119 116 124 151" fill="none" stroke="#f4eedd" stroke-width="3"/>
+  </g>
+  <path d="M141 28q17-12 34-10" fill="none" stroke="#fff7e6" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+</svg>

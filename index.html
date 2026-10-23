@@ -249,6 +249,142 @@
     font-size:11px;
     font-weight:700;
   }
+  .game-hud{
+    display:grid;
+    grid-template-columns:minmax(150px,1.1fr) minmax(150px,1.4fr) auto auto;
+    align-items:center;
+    gap:12px;
+    padding:10px 16px;
+    background:#183e3b;
+    color:var(--paper);
+    border-bottom:2px solid var(--mustard);
+    font-size:10px;
+    letter-spacing:.4px;
+  }
+  .game-hud-brand{display:flex;align-items:center;gap:9px;min-width:0;}
+  .game-hud-brand img{width:30px;height:30px;object-fit:contain;flex:none;}
+  .game-hud-team,.game-hud-mission{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .game-hud-label{display:block;color:#c8d8c8;font-size:8px;letter-spacing:1px;margin-bottom:3px;}
+  .game-hud-value{font-weight:700;}
+  .game-hud-stat{padding:6px 9px;border:1px solid rgba(244,238,221,.35);border-radius:4px;text-align:center;white-space:nowrap;}
+  .game-hud-stat .game-hud-value{font-size:11px;}
+  .crt-inner:has(> .game-hud) > .rec-tag{display:none;}
+  .campaign-map{
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+    padding:12px 4px 4px;
+  }
+  .campaign-map::before{
+    content:"";
+    position:absolute;
+    top:26px;bottom:26px;left:50%;
+    border-left:4px dashed rgba(35,35,54,.2);
+    transform:translateX(-50%);
+    pointer-events:none;
+  }
+  .floor-btn{
+    position:relative;
+    z-index:1;
+    min-height:116px;
+    display:grid;
+    grid-template-columns:54px minmax(0,1fr);
+    grid-template-rows:auto auto;
+    align-items:center;
+    column-gap:12px;
+    row-gap:5px;
+    padding:14px;
+    background:linear-gradient(145deg,#fff9e9,var(--wall));
+    border:2px solid var(--ink);
+    border-left:8px solid var(--teal);
+    border-radius:8px 4px 8px 4px;
+    box-shadow:4px 4px 0 rgba(35,35,54,.28);
+    cursor:pointer;
+    text-align:left;
+    font-family:'Space Mono',monospace;
+    transition:transform .14s ease,box-shadow .14s ease;
+  }
+  .floor-btn:hover{transform:translateY(-3px);box-shadow:5px 7px 0 rgba(35,35,54,.28);}
+  .floor-btn.locked{filter:grayscale(.75);opacity:.68;cursor:not-allowed;border-left-color:#858585;}
+  .floor-btn.cleared{border-left-color:var(--good);background:linear-gradient(145deg,#f2faed,#dcebd7);}
+  .floor-num{
+    grid-row:1/3;
+    width:48px;height:48px;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid currentColor;border-radius:14px;
+    background:var(--teal-dark);
+    color:#fff;
+    font-family:'Alfa Slab One',serif;
+    font-size:22px;
+  }
+  .floor-btn.cleared .floor-num{background:var(--good);color:#fff;}
+  .floor-btn.locked .floor-num{background:#777;}
+  .floor-info{min-width:0;}
+  .floor-info .fname{font-weight:700;font-size:13px;}
+  .floor-info .ftag{font-size:9px;color:#555;margin-top:3px;}
+  .floor-status{grid-column:2;font-size:9px;font-weight:700;letter-spacing:.5px;}
+  .floor-progress{height:5px;background:rgba(35,35,54,.15);border-radius:6px;overflow:hidden;margin-top:6px;}
+  .floor-progress span{display:block;height:100%;background:var(--mustard-dark);}
+  .floor-btn.cleared .floor-progress span{background:var(--good);}
+  .campaign-brief{
+    display:flex;align-items:center;gap:12px;
+    background:#fff8df;border:2px solid var(--ink);border-left:8px solid var(--mustard);
+    border-radius:5px;padding:12px 14px;margin:0 0 10px;font-size:11px;line-height:1.5;
+  }
+  .campaign-brief-icon{font-size:24px;flex:none;}
+  .world-map-panel{
+    padding:22px;
+    background:var(--wall);
+  }
+  .world-map-heading{text-align:center;margin-bottom:16px;}
+  .world-map-heading h2{font-size:20px;color:var(--teal-dark);}
+  .world-map-heading p{font-size:11px;line-height:1.6;color:#555;margin:7px 0 0;}
+  .world-map-frame{
+    position:relative;
+    width:100%;
+    aspect-ratio:3/2;
+    overflow:hidden;
+    border:3px solid var(--ink);
+    border-radius:18px;
+    background:#a9d888;
+    box-shadow:6px 6px 0 rgba(35,35,54,.25);
+  }
+  .world-map-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;}
+  .world-map-location{
+    position:absolute;
+    z-index:2;
+    transform:translate(-50%,-50%);
+    min-width:110px;
+    padding:7px 10px;
+    border:3px solid var(--ink);
+    border-radius:12px;
+    background:#fff6df;
+    color:var(--ink);
+    box-shadow:3px 4px 0 rgba(35,35,54,.35);
+    font:700 10px 'Space Mono',monospace;
+    cursor:pointer;
+    text-align:center;
+    transition:transform .12s ease,box-shadow .12s ease;
+  }
+  .world-map-location:hover,.world-map-location:focus-visible{transform:translate(-50%,-55%) scale(1.05);box-shadow:4px 6px 0 rgba(35,35,54,.35);outline:3px solid #fff;}
+  .world-map-location:active{transform:translate(-50%,-48%);}
+  .world-map-location span{display:block;font-size:17px;margin-bottom:3px;}
+  .world-map-coast{left:37%;top:25%;border-color:#d85f58;}
+  .world-map-downtown{left:61%;top:45%;border-color:#3c9fca;}
+  .world-map-suburbs{left:82%;top:74%;border-color:#d09a30;}
+  .world-map-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;}
+  .world-map-current{font-size:11px;color:#555;}
+  @media(max-width:620px){
+    .game-hud{grid-template-columns:1fr 1fr;gap:8px;}
+    .campaign-map{grid-template-columns:1fr;gap:10px;}
+    .campaign-map::before{left:29px;transform:none;}
+    .floor-btn{min-height:92px;}
+    .world-map-panel{padding:12px;}
+    .world-map-frame{border-width:2px;border-radius:10px;}
+    .world-map-location{min-width:0;padding:5px 6px;border-width:2px;border-radius:8px;font-size:7px;box-shadow:2px 2px 0 rgba(35,35,54,.35);}
+    .world-map-location span{font-size:12px;margin-bottom:1px;}
+  }
   .room{
     position:relative;
     height:420px;
@@ -506,7 +642,45 @@
   .rank-2 { background: #e0e0e0; color: #111; }
   .rank-3 { background: #cd7f32; color: #fff; }
 
-  /* ---------- SPOT THE PHISH STYLE ---------- */
+  /* ---------- CATCH A FISH STYLE ---------- */
+  .phish-hub{padding:22px;background:var(--wall);}
+  .phish-hub-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr);gap:18px;align-items:stretch;}
+  .fishing-scene{position:relative;min-height:230px;overflow:hidden;border:2px solid var(--ink);border-radius:6px;background:linear-gradient(#b9e3ed 0 38%,#e9d69b 38% 43%,#63b5c3 43% 100%);}
+  .fishing-sun{position:absolute;top:14px;right:22px;font-size:27px;}
+  .fishing-pier{position:absolute;top:33%;left:0;right:0;height:15px;background:#806344;border-top:4px solid #b28a5c;z-index:3;}
+  .fishing-person{position:absolute;top:3%;left:4%;width:38%;height:auto;z-index:4;}
+  .fishing-line{position:absolute;left:42%;top:5%;height:62%;border-left:2px dashed #263149;z-index:2;transform:rotate(-4deg);transform-origin:top;}
+  .fishing-float{position:absolute;left:48%;top:77%;font-size:17px;z-index:2;}
+  .fishing-layer{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:0 12px;color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;text-shadow:0 1px 3px #143d55;}
+  .fishing-layer.surface{top:43%;height:19%;background:rgba(67,166,180,.55);}
+  .fishing-layer.mid{top:62%;height:19%;background:rgba(39,111,151,.65);}
+  .fishing-layer.deep{top:81%;height:19%;background:rgba(24,54,93,.78);}
+  .fishing-layer span:last-child{font-size:22px;letter-spacing:0;}
+  .phish-hub-copy{display:flex;flex-direction:column;justify-content:center;padding:20px;background:var(--paper);border:2px solid var(--ink);}
+  .phish-hub-copy p{font-size:13px;line-height:1.65;margin:12px 0;}
+  .phish-depths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0;}
+  .phish-depth-card{padding:12px;background:var(--paper);border:2px solid var(--ink);border-bottom-width:5px;}
+  .phish-depth-card:nth-child(1){border-bottom-color:#63b5c3;}
+  .phish-depth-card:nth-child(2){border-bottom-color:#276f97;}
+  .phish-depth-card:nth-child(3){border-bottom-color:#18365d;}
+  .phish-depth-card b{display:block;font-family:'Alfa Slab One',serif;font-size:14px;margin-bottom:5px;}
+  .phish-depth-card span{display:block;font-size:11px;line-height:1.5;color:#4d4d4d;}
+  .phish-tutorial{padding:14px 16px;background:#e4eee5;border:2px solid var(--teal-dark);font-size:12px;line-height:1.6;}
+  .fish-basket{display:flex;align-items:center;gap:10px;margin:14px 0;padding:10px 12px;background:#fff8e7;border:2px solid var(--ink);border-radius:4px;}
+  .fish-basket-icon{font-size:27px;line-height:1;}
+  .fish-basket-content{flex:1;min-width:0;}
+  .fish-basket-label{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--teal-dark);}
+  .fish-basket-fish{display:flex;gap:5px;min-height:24px;align-items:center;margin-top:3px;font-size:20px;}
+  .fish-basket-empty{font-size:11px;color:#777;}
+  .fish-basket-count{font-size:11px;font-weight:700;white-space:nowrap;}
+  @media(max-width:640px){
+    .phish-hub-hero{grid-template-columns:1fr;}
+    .phish-depths{grid-template-columns:1fr;}
+    .phish-depth-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 12px;}
+    .phish-depth-card span{grid-column:1/-1;}
+  }
+
+  /* ---------- CATCH A FISH GAME STYLE ---------- */
   .exhibits {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -691,7 +865,6 @@
 </head>
 <body>
 <div id="app">
-  <img src="Icon - Red.png" alt="Logo" style="position:fixed; top:20px; left:20px; width:60px; height:auto; z-index:100; drop-shadow: 0 4px 10px rgba(0,0,0,0.5);">
   <div class="stage" id="stage"></div>
 </div>
 
@@ -941,109 +1114,126 @@ const FLOORS = [
 
 ];
 
-/* ============ SPOT THE PHISH DATA ============ */
+/* ============ CATCH A FISH TRAINING DATA ============ */
 const PHISH_LEVELS = [
     {
       id: 1, type: 'email', difficulty: 'Easy',
-      title: 'The Obvious Alarm',
-      brief: 'A bank sends an account alert. So does someone pretending to be that bank. One of these landed in the wrong inbox.',
+      title: 'The Account Alert',
+      brief: 'A Microsoft account alert arrives. Compare the sender address and the pressure in the message before deciding which one is genuine.',
       phishSide: 'B',
+      reason: 'The imposter uses microsoft-support.example instead of microsoft.com and threatens an account shutdown to rush you into sharing a password.',
       A: {
-        brand: 'MERIDIAN BANK', mark: 'MB', markColor: '#2E5AAC',
-        from: 'Meridian Bank Alerts', fromEmail: 'alerts@meridianbank.com',
-        to: 'sam.oduya@gmail.com', replyTo: 'alerts@meridianbank.com',
-        subject: 'Your October statement is ready',
-        bodyHtml: `<p>Hi Sam,</p><p>Your October account statement is now available in your Meridian Bank online banking portal.</p>`,
-        cta: {text: 'View Statement', href: 'https://meridianbank.com/statements', style: 'calm'},
-        footer: 'Meridian Bank, N.A. · Member FDIC · This is an automated notice, please don\'t reply.'
+        brand: 'MICROSOFT ACCOUNT', mark: 'M', markColor: '#0078D4',
+        from: 'Microsoft account team', fromEmail: 'account-security@microsoft.com',
+        to: 'sam@example.com', replyTo: 'account-security@microsoft.com',
+        subject: 'A new sign-in to your account',
+        bodyHtml: `<p>Hi Sam,</p><p>We noticed a sign-in from a new device. If this was you, no action is needed. You can review recent activity by opening your account settings directly.</p>`,
+        cta: {text: 'Review account activity', href: '#', style: 'calm'},
+        footer: 'Training mockup using the Microsoft name. Not an official Microsoft message.'
       },
       B: {
-        brand: 'MERIDIAN BANK', mark: 'MB', markColor: '#2E5AAC',
-        from: 'Meridian Bank Alerts', fromEmail: 'alerts@meridianbank-secure.com',
-        to: 'sam.oduya@gmail.com', replyTo: 'support@meridianbank-secure.com',
-        subject: 'URGENT: Verify Your Account NOW or It Will Be Suspended',
-        bodyHtml: `<p>Dear Valued Customer,</p><p>We have detected unusual activity. You must verify you're account immediatly or risk permanent suspension within 24 hours.</p>`,
-        cta: {text: 'VERIFY ACCOUNT NOW', href: 'https://meridianbank-secure.com/verify-now', style: 'urgent'},
+        brand: 'MICROSOFT ACCOUNT', mark: 'M', markColor: '#0078D4',
+        from: 'Microsoft account team', fromEmail: 'account-security@microsoft-support.example',
+        to: 'sam@example.com', replyTo: 'help@microsoft-support.example',
+        subject: 'URGENT: Your account will be locked today',
+        bodyHtml: `<p>Dear user,</p><p>Your account will be permanently closed in 30 minutes. Confirm your password immediately to keep access.</p>`,
+        cta: {text: 'Keep my account', href: '#', style: 'urgent'},
         footer: ''
       }
     },
     {
-      id: 2, type: 'email', difficulty: 'Easy - Medium',
-      title: 'The Shared File',
-      brief: 'A cloud storage notice says a coworker shared a spreadsheet. The link text looks right - but does it go where it says?',
+      id: 2, type: 'email', difficulty: 'Easy',
+      title: 'The Shared Drive File',
+      brief: 'A Google Drive notification says a coworker shared a file. The display text looks convincing, but inspect the sender and the destination.',
       phishSide: 'A',
+      reason: 'The sender and destination use google-drive-alerts.example, not google.com. Display text can be copied; check the real address.',
       A: {
-        brand: 'NORTHWIND CLOUD', mark: 'NC', markColor: '#3E6ED1',
-        from: 'Northwind Cloud', fromEmail: 'notifications@northwind-cloud.net',
-        to: 'you@yourcompany.com', replyTo: 'notifications@northwind-cloud.net',
-        subject: 'Ari Osei shared "Q3 Budget Review.xlsx" with you',
-        bodyHtml: `<p>Hi there,</p><p>Ari Osei has shared a file with you on Northwind Cloud. Open it below to view the spreadsheet.</p><div style="font-family:'Space Mono'; margin-top:10px; color:var(--teal); text-decoration:underline;">northwindcloud.com/share/Q3-Budget</div><div style="font-size:10px; color:#999; margin-top:2px;">(Actually points to: https://northwind-files-cloud.ru/login)</div>`,
+        brand: 'GOOGLE DRIVE', mark: 'G', markColor: '#4285F4',
+        from: 'Google Drive', fromEmail: 'drive-share@google-drive-alerts.example',
+        to: 'sam@example.com', replyTo: 'drive-share@google-drive-alerts.example',
+        subject: 'Jordan shared "Project notes" with you',
+        bodyHtml: `<p>Hi Sam,</p><p>Jordan shared a file with you. The message displays a familiar Google Drive name, but the sender domain is not google.com.</p><div style="font-family:'Space Mono'; margin-top:10px; color:var(--teal); text-decoration:underline;">drive.google.com/open?id=training-file</div><div style="font-size:10px; color:#999; margin-top:2px;">Training link destination: drive-share.google-drive-alerts.example</div>`,
         cta: null,
-        footer: 'Northwind Cloud Team'
+        footer: 'Training mockup using the Google name. Not an official Google message.'
       },
       B: {
-        brand: 'NORTHWIND CLOUD', mark: 'NC', markColor: '#3E6ED1',
-        from: 'Northwind Cloud', fromEmail: 'notifications@northwindcloud.com',
-        to: 'you@yourcompany.com', replyTo: 'notifications@northwindcloud.com',
-        subject: 'Ari Osei shared "Q3 Budget Review.xlsx" with you',
-        bodyHtml: `<p>Hi there,</p><p>Ari Osei has shared a file with you on Northwind Cloud. Open it below to view the spreadsheet.</p><div style="font-family:'Space Mono'; margin-top:10px; color:var(--teal); text-decoration:underline;">northwindcloud.com/share/Q3-Budget</div><div style="font-size:10px; color:#999; margin-top:2px;">(Actually points to: https://northwindcloud.com/share/Q3-Budget)</div>`,
+        brand: 'GOOGLE DRIVE', mark: 'G', markColor: '#4285F4',
+        from: 'Google Drive', fromEmail: 'drive-shares-noreply@google.com',
+        to: 'sam@example.com', replyTo: 'drive-shares-noreply@google.com',
+        subject: 'Jordan shared "Project notes" with you',
+        bodyHtml: `<p>Hi Sam,</p><p>Jordan shared a file with you. The notification came from google.com and the displayed destination is the expected Google Drive address.</p><div style="font-family:'Space Mono'; margin-top:10px; color:var(--teal); text-decoration:underline;">drive.google.com/open?id=training-file</div><div style="font-size:10px; color:#999; margin-top:2px;">Training link destination: drive.google.com</div>`,
         cta: null,
-        footer: 'Northwind Cloud · You\'re receiving this because file-sharing notifications are on. Manage preferences.'
+        footer: 'Training mockup using the Google name. Not an official Google message.'
       }
     },
     {
       id: 3, type: 'login', difficulty: 'Medium',
-      title: 'The Sign-In Page',
-      brief: 'Two sign-in pages for the same bank. Both use HTTPS. Both look clean. Read the address bar carefully.',
+      title: 'The Streaming Sign-In',
+      brief: 'Two Netflix sign-in pages look nearly identical, and both show HTTPS. The real clue is the domain name in the address bar.',
       phishSide: 'B',
+      reason: 'The real site is netflix.com. In the imposter address, the registered domain is account-check.example; the Netflix name is only a subdomain. HTTPS does not make it official.',
       A: {
-        url: 'meridianbank.com/login', https: true,
-        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC',
+        url: 'www.netflix.com/login', https: true,
+        brand: 'NETFLIX', mark: 'N', markColor: '#E50914',
         submitText: 'Sign In', extraField: null
       },
       B: {
-        url: 'meridianbank.com.login-verify.co/secure', https: true,
-        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC',
-        submitText: 'Log In', extraField: 'Card Number'
+        url: 'netflix.com.account-check.example/login', https: true,
+        brand: 'NETFLIX', mark: 'N', markColor: '#E50914',
+        submitText: 'Sign In', extraField: null
       }
     },
     {
       id: 4, type: 'email', difficulty: 'Medium - Hard',
-      title: 'The Colleague',
-      brief: 'A message from a coworker about an unpaid invoice. The name on it is someone you trust.',
+      title: 'The Workspace Invite',
+      brief: 'A Slack workspace invitation looks routine. Look beyond the display name and check the sender domain and request.',
       phishSide: 'B',
+      reason: 'The sender is not from slack.com, and the invitation unexpectedly asks for your password under time pressure. Open the service directly instead.',
       A: {
-        brand: 'ACME CORP', mark: 'AC', markColor: '#4C7A44',
-        from: 'Priya Shah', fromEmail: 'priya.shah@acmecorp.com',
-        to: 'you@acmecorp.com', replyTo: 'priya.shah@acmecorp.com',
-        subject: 'Re: Vendor invoice - need your approval',
-        bodyHtml: `<p>Hey,</p><p>Can you approve the Lindqvist Supplies invoice when you get a sec? It's in the usual folder.</p><p>Thanks!</p>`,
-        cta: null, footer: '', sig: 'Priya'
+        brand: 'SLACK WORKSPACE', mark: 'S', markColor: '#611F69',
+        from: 'Slack', fromEmail: 'notification@slack.com',
+        to: 'sam@example.com', replyTo: 'notification@slack.com',
+        subject: 'Morgan invited you to join the Design team',
+        bodyHtml: `<p>Hi Sam,</p><p>Morgan invited you to join the Design workspace. If you were expecting this, open Slack directly and check your invitations.</p>`,
+        cta: {text: 'Open Slack', href: '#', style: 'calm'},
+        footer: 'Training mockup using the Slack name. Not an official Slack message.'
       },
       B: {
-        brand: 'ACME CORP', mark: 'AC', markColor: '#4C7A44',
-        from: 'Priya Shah', fromEmail: 'priya.shah@acmecorp.co',
-        to: 'you@acmecorp.com', replyTo: 'p.finance.ops@mailrelay-corp.com',
-        subject: 'Re: Vendor invoice - need your approval today',
-        bodyHtml: `<p>Hey,</p><p>Finance flagged the Lindqvist Supplies invoice - their bank details changed, can you approve the wire to the new account before end of day? Details attached.</p><p>Thanks!</p>`,
-        cta: null, footer: '', sig: 'Priya'
+        brand: 'SLACK WORKSPACE', mark: 'S', markColor: '#611F69',
+        from: 'Slack Workspace', fromEmail: 'notification@slack-workspace-invite.example',
+        to: 'sam@example.com', replyTo: 'workspace-admin@slack-workspace-invite.example',
+        subject: 'ACTION REQUIRED: Verify your password to join',
+        bodyHtml: `<p>Hi Sam,</p><p>Your invitation expires today. Enter your Slack password on the linked page to unlock the workspace immediately.</p>`,
+        cta: {text: 'Verify password', href: '#', style: 'urgent'},
+        footer: 'Training mockup using the Slack name. Not an official Slack message.'
       }
     },
     {
       id: 5, type: 'login', difficulty: 'Hard',
-      title: 'The Perfect Copy',
-      brief: 'Same layout. Same colors. Same everything - almost. This is the one where you have to read every character of the address bar.',
+      title: 'The Almost-Perfect Account Page',
+      brief: 'The Microsoft sign-in design and wording match. Slow down and identify the actual domain; HTTPS alone does not prove a site is genuine.',
       phishSide: 'A',
+      reason: 'The actual domain is security-check.example, not microsoftonline.com. The trusted brand name appears only in a subdomain.',
       A: {
-        url: 'rneridianbank.com', https: true,
-        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC', submitText: 'Sign In', extraField: null
+        url: 'login.microsoftonline.security-check.example', https: true,
+        brand: 'MICROSOFT', mark: 'M', markColor: '#0078D4', submitText: 'Sign in', extraField: null
       },
       B: {
-        url: 'meridianbank.com', https: true,
-        brand: 'Meridian Bank', mark: 'MB', markColor: '#2E5AAC', submitText: 'Sign In', extraField: null
+        url: 'login.microsoftonline.com', https: true,
+        brand: 'MICROSOFT', mark: 'M', markColor: '#0078D4', submitText: 'Sign in', extraField: null
       }
     }
 ];
+
+const PHISH_DEPTHS = [
+  { id: 1, name: 'Shallow Water', difficulty: 'Easy', cases: 'Cases 1–2', caseIds: [1, 2], description: 'Obvious clues: strange senders, pressure, and suspicious requests.' },
+  { id: 2, name: 'Mid-Water', difficulty: 'Medium', cases: 'Cases 3–4', caseIds: [3, 4], description: 'Convincing copies: check the full address and unexpected login requests.' },
+  { id: 3, name: 'Deep Water', difficulty: 'Hard', cases: 'Case 5', caseIds: [5], description: 'Subtle impersonation: inspect the domain carefully, even when HTTPS is shown.' }
+];
+
+function getPhishDepth(caseId) {
+  return PHISH_DEPTHS.find(depth => depth.caseIds.includes(caseId)) || PHISH_DEPTHS[2];
+}
 
 /* ============ STATE ============ */
 
@@ -1055,8 +1245,10 @@ let state = {
   teamKey: null,
   isSolo: true,
   teamName: "",
+  teamMembers: "",
+  isAnonymous: false,
   
-  // Spot the Phish state
+  // Catch a Fish state
   phishLevel: 0,
   phishPhase: "choose", // choose | revealed
   phishChosenSide: null,
@@ -1243,11 +1435,14 @@ const stage = document.getElementById('stage');
 function render(){
   stage.innerHTML = "";
   if(state.screen==="hub") stage.appendChild(renderHub());
+  else if(state.screen==="leaderboards") stage.appendChild(renderLeaderboards());
+  else if(state.screen==="worldMap") stage.appendChild(renderWorldMap());
   else if(state.screen==="title") stage.appendChild(renderTitle());
   else if(state.screen==="registration") stage.appendChild(renderRegistration());
   else if(state.screen==="lobby") stage.appendChild(renderLobby());
   else if(state.screen==="floor") stage.appendChild(renderFloor());
   else if(state.screen==="ending") stage.appendChild(renderEnding());
+  else if(state.screen==="phishHub") stage.appendChild(renderPhishHub());
   else if(state.screen==="phish") stage.appendChild(renderPhish());
   else if(state.screen==="phishRegistration") stage.appendChild(renderPhishRegistration());
   else if(state.screen==="phishEnding") stage.appendChild(renderPhishEnding());
@@ -1265,53 +1460,54 @@ function renderHub(){
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
         <div class="marquee">
-          <h1>CyberWare HQ</h1>
-          <div class="sub">CHOOSE YOUR TRAINING MODULE</div>
+          <h1>UNSAFE Business Inc.</h1>
+          <div class="sub">PRESENTS</div>
         </div>
-        <div style="padding: 28px 24px; background: var(--wall);">
-          <p style="text-align:center; font-family:'Space Mono',monospace; font-size:13px; max-width:520px; margin: 0 auto 28px; line-height:1.7; color:#3a3a2e;">
-            Select a cybersecurity training game below. Each module tests a different set of real-world skills.
-          </p>
-          <div class="module-card" id="hubUB">
-            <div class="module-accent burgundy"></div>
-            <div class="module-body">
-              <div class="module-title burgundy">UNSAFE Business Inc.</div>
-              <div class="module-tag-line">5 FLOORS · 15 INCIDENTS · SCENE INVESTIGATION</div>
-              <p class="module-desc">Explore five departments of a fictional company, find the bad security habits, and choose the right fixes.</p>
-            </div>
-          </div>
-          <div class="module-card" id="hubPhish">
-            <div class="module-accent teal"></div>
-            <div class="module-body">
-              <div class="module-title teal">Spot the Phish</div>
-              <div class="module-tag-line">5 CASES · EMAILS & LOGIN PAGES · FORENSIC ANALYSIS</div>
-              <p class="module-desc">Examine side-by-side email and login page exhibits. Identify the phishing attempt and explain the signals that gave it away.</p>
-            </div>
-          </div>
-          <div class="module-card" id="hubMakeMeSecure">
-            <div class="module-accent mustard" style="background: var(--mustard);"></div>
-            <div class="module-body">
-              <div class="module-title" style="color: var(--mustard-dark);">Make Me Secure</div>
-              <div class="module-tag-line">3 LEVELS · WEAK PASSWORDS · UPGRADING · CRACKING</div>
-              <p class="module-desc">Spot weak passwords, learn how to upgrade them, and practice cracking easy passwords based on personal clues.</p>
-            </div>
+        <div class="title-screen">
+          <div class="building-icon" style="font-family:'Alfa Slab One';font-size:54px;border:4px solid currentColor;display:inline-block;padding:10px 22px;border-radius:8px;">HQ</div>
+          <h2 style="font-size:clamp(25px,5vw,40px);color:var(--teal-dark);margin:10px 0;">CyberWare HQ</h2>
+          <p class="title-copy">A playful cybersecurity training adventure. Build your team, explore the map, and take on three hands-on security missions.</p>
+          <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn good" id="welcomeStartBtn">Start</button>
+            <button class="btn secondary" id="welcomeLeaderboardBtn">Leaderboard</button>
           </div>
         </div>
-        <div style="padding:0 24px 24px; background:var(--wall);">
-          <div id="hubSecureScoreboard"></div>
-          <div id="hubPhishScoreboard"></div>
-          <div id="hubOverallScoreboard"></div>
-        </div>
-        <div class="timestamp">CAM 01 — MAIN LOBBY</div>
+        <div class="timestamp">CYBERWARE HQ — WELCOME</div>
       </div>
     </div>
   `);
-  wrap.querySelector('#hubUB').onclick = ()=>{ state.screen="registration"; render(); };
-  renderPhishScoreboard(wrap.querySelector('#hubPhishScoreboard'));
-  renderSecureScoreboard(wrap.querySelector('#hubSecureScoreboard'));
-  renderOverallScoreboard(wrap.querySelector('#hubOverallScoreboard'));
-  wrap.querySelector('#hubPhish').onclick = ()=>{ state.screen="phishRegistration"; render(); };
-  wrap.querySelector('#hubMakeMeSecure').onclick = ()=>{ window.location.href = 'make-me-secure.html'; };
+  wrap.querySelector('#welcomeStartBtn').onclick = ()=>{ state.screen="registration"; render(); };
+  wrap.querySelector('#welcomeLeaderboardBtn').onclick = ()=>{ state.screen="leaderboards"; render(); };
+  return wrap;
+}
+
+function renderLeaderboards() {
+  const wrap = el(`
+    <div class="crt-frame">
+      <div class="crt-inner">
+        <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        <div class="marquee">
+          <h1>Leaderboards</h1>
+          <div class="sub">CYBERWARE HQ · TEAM RECORDS</div>
+        </div>
+        <div style="padding:0 24px 24px;background:var(--wall);">
+          <div id="welcomeBusinessScoreboard"></div>
+          <div id="welcomePhishScoreboard"></div>
+          <div id="welcomeSecureScoreboard"></div>
+          <div id="welcomeOverallScoreboard"></div>
+          <div style="margin-top:24px;text-align:center;">
+            <button class="btn secondary" id="leaderboardBackBtn">← Back</button>
+          </div>
+        </div>
+        <div class="timestamp">CYBERWARE HQ — LEADERBOARDS</div>
+      </div>
+    </div>
+  `);
+  renderScoreboard(wrap.querySelector('#welcomeBusinessScoreboard'));
+  renderPhishScoreboard(wrap.querySelector('#welcomePhishScoreboard'));
+  renderSecureScoreboard(wrap.querySelector('#welcomeSecureScoreboard'));
+  renderOverallScoreboard(wrap.querySelector('#welcomeOverallScoreboard'));
+  wrap.querySelector('#leaderboardBackBtn').onclick = ()=>{ state.screen="hub"; render(); };
   return wrap;
 }
 
@@ -1335,7 +1531,7 @@ function renderTitle(){
           </div>
           <div style="margin-bottom: 24px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
             <button class="btn" id="startBtn">Begin Inspection</button>
-            <button class="btn secondary" id="startPhishBtn">Play: Spot the Phish</button>
+            <button class="btn secondary" id="startPhishBtn">Play: Catch a Fish</button>
           </div>
           <div id="titleScoreboard"></div>
         </div>
@@ -1344,7 +1540,7 @@ function renderTitle(){
     </div>
   `);
   wrap.querySelector('#startBtn').onclick = ()=>{ state.screen="registration"; render(); };
-  wrap.querySelector('#startPhishBtn').onclick = ()=>{ state.screen="phish"; state.phishLevel=0; state.phishPhase="choose"; state.phishChosenSide=null; render(); };
+  wrap.querySelector('#startPhishBtn').onclick = ()=>{ state.screen="phishHub"; state.phishLevel=0; state.phishPhase="choose"; state.phishChosenSide=null; state.phishScore=0; render(); };
   renderScoreboard(wrap.querySelector('#titleScoreboard'));
   return wrap;
 }
@@ -1512,6 +1708,11 @@ function renderRegistration(){
   wrap.querySelector('#startSoloBtn').onclick = () => {
     const sName = wrap.querySelector('#soloName').value.trim();
     const isAnon = wrap.querySelector('#soloAnon').checked;
+    state.isAnonymous = isAnon;
+    state.teamKey = null;
+    state.isSolo = true;
+    state.teamName = sName ? `${sName} (Solo)` : "Anonymous Solo";
+    state.teamMembers = sName || "Anonymous";
 
     if (!isAnon && sName) {
       const btn = wrap.querySelector('#startSoloBtn');
@@ -1521,30 +1722,25 @@ function renderRegistration(){
       if (window.db && window.firebasePush && window.firebaseRef && window.firebaseSet) {
         const teamsRef = window.firebasePush(window.firebaseRef(window.db, 'teams'));
         state.teamKey = teamsRef.key;
-        state.isSolo = true;
-        state.teamName = `${sName} (Solo)`;
         window.firebaseSet(teamsRef, {
           teamName: `${sName} (Solo)`,
           teamMembers: sName,
           timestamp: new Date().toISOString(),
           isSolo: true
         }).then(() => {
-          state.screen = "lobby";
+          state.screen = "worldMap";
           render();
         }).catch(err => {
           console.error("Error saving solo run:", err);
-          state.screen = "lobby";
+          state.screen = "worldMap";
           render();
         });
       } else {
-        state.screen = "lobby";
+        state.screen = "worldMap";
         render();
       }
     } else {
-      state.screen = "lobby";
-      state.teamKey = null;
-      state.isSolo = true;
-      state.teamName = sName ? `${sName} (Solo)` : "Anonymous Solo";
+      state.screen = "worldMap";
       render();
     }
   };
@@ -1573,14 +1769,16 @@ function renderRegistration(){
 
     state.teamKey = selectedKey;
     state.isSolo = false;
+    state.isAnonymous = false;
     state.teamName = activeTeams[selectedKey].teamName || "Unnamed Team";
+    state.teamMembers = updatedMembers;
 
     if (window.db && window.firebaseRef && window.firebaseUpdate) {
       const teamRef = window.firebaseRef(window.db, `teams/${selectedKey}`);
       window.firebaseUpdate(teamRef, {
         teamMembers: updatedMembers
       }).then(() => {
-        state.screen = "lobby";
+        state.screen = "worldMap";
         render();
       }).catch(err => {
         alert("Error joining team: " + err.message);
@@ -1588,7 +1786,7 @@ function renderRegistration(){
         btn.textContent = "Join & Enter Lobby";
       });
     } else {
-      state.screen = "lobby";
+      state.screen = "worldMap";
       render();
     }
   };
@@ -1606,19 +1804,22 @@ function renderRegistration(){
     const btn = wrap.querySelector('#submitTeamBtn');
     btn.disabled = true;
     btn.textContent = "Registering...";
+    state.isAnonymous = false;
+    state.teamKey = null;
+    state.isSolo = false;
+    state.teamName = tName;
+    state.teamMembers = tMembers;
 
     if(window.db && window.firebasePush && window.firebaseRef && window.firebaseSet) {
       const teamsRef = window.firebasePush(window.firebaseRef(window.db, 'teams'));
       state.teamKey = teamsRef.key;
-      state.isSolo = false;
-      state.teamName = tName;
       window.firebaseSet(teamsRef, {
         teamName: tName,
         teamMembers: tMembers,
         timestamp: new Date().toISOString(),
         isSolo: false
       }).then(() => {
-        state.screen="lobby"; 
+        state.screen="worldMap"; 
         render();
       }).catch(err => {
         alert("Error saving team: " + err.message);
@@ -1626,7 +1827,7 @@ function renderRegistration(){
         btn.textContent = "Register & Enter Lobby";
       });
     } else {
-      state.screen="lobby";
+      state.screen="worldMap";
       render();
     }
   };
@@ -1636,23 +1837,232 @@ function renderRegistration(){
   return wrap;
 }
 
-function renderLobby(){
-  const cleared = FLOORS.filter(isFloorCleared).length;
+function escapeHudText(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+}
+
+function renderGameHud(mission, progress, score, teamName) {
+  const safeTeam = escapeHudText(teamName || 'Inspector');
+  return `<div class="game-hud">
+    <div class="game-hud-brand"><img src="Icon - Red.png" alt=""><div class="game-hud-team"><span class="game-hud-label">TEAM</span><span class="game-hud-value">${safeTeam}</span></div></div>
+    <div class="game-hud-mission"><span class="game-hud-label">CURRENT MISSION</span><span class="game-hud-value">${escapeHudText(mission)}</span></div>
+    <div class="game-hud-stat"><span class="game-hud-label">PROGRESS</span><span class="game-hud-value">${escapeHudText(progress)}</span></div>
+    <div class="game-hud-stat"><span class="game-hud-label">SCORE</span><span class="game-hud-value">${escapeHudText(score)}</span></div>
+  </div>`;
+}
+
+function persistCurrentTeam(autoStartSecure = false) {
+  try {
+    if (!state.teamName) {
+      sessionStorage.removeItem('unsafeBusinessTeamHandoff');
+      return;
+    }
+    sessionStorage.setItem('unsafeBusinessTeamHandoff', JSON.stringify({
+      teamName: state.teamName,
+      teamMembers: state.teamMembers || state.teamName,
+      isSolo: state.isSolo,
+      isAnonymous: state.isAnonymous,
+      autoStart: autoStartSecure
+    }));
+  } catch (err) {
+    console.error('Could not save the current team for returning to the world map:', err);
+  }
+}
+
+function restoreTeamForWorldMap() {
+  try {
+    const handoff = JSON.parse(sessionStorage.getItem('unsafeBusinessTeamHandoff') || 'null');
+    if (!handoff || typeof handoff.teamName !== 'string' || !handoff.teamName.trim()) return false;
+    state.teamName = handoff.teamName;
+    state.teamMembers = typeof handoff.teamMembers === 'string' ? handoff.teamMembers : '';
+    state.isSolo = handoff.isSolo === true;
+    state.isAnonymous = handoff.isAnonymous === true;
+    state.teamKey = null;
+    state.screen = 'worldMap';
+    return true;
+  } catch (err) {
+    console.error('Could not restore the current team from the world map handoff:', err);
+    return false;
+  }
+}
+
+function startPhishWithCurrentTeam() {
+  state.phishLevel = 0;
+  state.phishPhase = 'choose';
+  state.phishChosenSide = null;
+  state.phishScore = 0;
+  state.phishTeamName = state.teamName || 'Anonymous';
+  state.phishIsSolo = state.isSolo;
+  state.phishTeamKey = null;
+
+  const start = () => {
+    state.screen = 'phishHub';
+    render();
+  };
+  if (state.isAnonymous || !window.db || !window.firebasePush || !window.firebaseRef || !window.firebaseSet) {
+    start();
+    return;
+  }
+
+  const teamRef = window.firebasePush(window.firebaseRef(window.db, 'phish_teams'));
+  state.phishTeamKey = teamRef.key;
+  window.firebaseSet(teamRef, {
+    phishTeamName: state.phishTeamName,
+    phishMembers: state.teamMembers || state.phishTeamName,
+    timestamp: new Date().toISOString(),
+    isSolo: state.isSolo
+  }).then(start).catch(err => {
+    state.phishTeamKey = null;
+    alert('Could not register this team for Catch a Fish: ' + err.message);
+  });
+}
+
+function renderFishBasket(caught, total) {
+  const fish = Array.from({ length: caught }, () => '<span aria-hidden="true">🐟</span>').join('');
+  const empty = caught < 1 ? '<span class="fish-basket-empty">No fish yet — make your first catch!</span>' : '';
+  return `<div class="fish-basket" role="status" aria-label="Basket: ${caught} of ${total} fish caught">
+    <span class="fish-basket-icon" aria-hidden="true">🧺</span>
+    <div class="fish-basket-content">
+      <div class="fish-basket-label">FISHERMAN'S BASKET</div>
+      <div class="fish-basket-fish">${fish}${empty}</div>
+    </div>
+    <span class="fish-basket-count">${caught}/${total} caught</span>
+  </div>`;
+}
+
+function renderPhishHub() {
   const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderGameHud('Catch a Fish · Fishing Dock', '3 sea depths', `${state.phishScore}/${PHISH_LEVELS.length}`, state.phishTeamName || state.teamName)}
+        <div class="marquee">
+          <h1>Catch a Fish</h1>
+          <div class="sub">READ THE CLUES · CATCH THE IMPOSTER</div>
+        </div>
+        <div class="phish-hub">
+          <div class="phish-hub-hero">
+            <div class="fishing-scene" role="img" aria-label="A fisherman casts a line through three layers of water">
+              <span class="fishing-sun" aria-hidden="true">☀️</span>
+              <img class="fishing-person" src="fisherman.svg" alt="A fisherman in a yellow rain hat casting a fishing line">
+              <div class="fishing-pier"></div>
+              <div class="fishing-line"></div>
+              <span class="fishing-float" aria-hidden="true">🪝</span>
+              <div class="fishing-layer surface"><span>SHALLOW WATER</span><span>🐟</span></div>
+              <div class="fishing-layer mid"><span>MID-WATER</span><span>🐠</span></div>
+              <div class="fishing-layer deep"><span>DEEP WATER</span><span>🐡</span></div>
+            </div>
+            <div class="phish-hub-copy">
+              <span class="badge">FISHING BRIEF</span>
+              <p>Cast your line and inspect two messages or sign-in pages. One is genuine; the other is an imposter using a familiar service's name. Choose the phishing attempt to reel it in.</p>
+              <p><b>Every correct catch adds a fish to your basket.</b> The water gets deeper and the clues get subtler as you progress.</p>
+              <div style="text-align:center;margin-top:6px;"><button class="btn good" id="castLineBtn">Cast Your Line</button></div>
+            </div>
+          </div>
+          <div class="phish-depths" aria-label="Fishing levels">
+            ${PHISH_DEPTHS.map(depth => `
+              <div class="phish-depth-card">
+                <b>LEVEL ${depth.id} · ${depth.name}</b>
+                <span>${depth.difficulty} · ${depth.cases}</span>
+                <span>${depth.description}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="phish-tutorial"><b>Quick fishing lesson:</b> check the full sender address and website domain, watch for urgent demands or password requests, and remember that a padlock (HTTPS) does not prove a site is genuine. These are fictional training mockups using recognizable platform names; they are not affiliated with those services, and their links do not open.</div>
+          ${renderFishBasket(0, PHISH_LEVELS.length)}
+          <div style="text-align:center;margin-top:16px;"><button class="btn secondary small" id="phishMapBtn">← Back to World Map</button></div>
+        </div>
+        <div class="timestamp">CATCH A FISH — FISHING DOCK</div>
+      </div>
+    </div>
+  `);
+  wrap.querySelector('#castLineBtn').onclick = () => {
+    state.phishLevel = 0;
+    state.phishPhase = 'choose';
+    state.phishChosenSide = null;
+    state.phishScore = 0;
+    state.screen = 'phish';
+    render();
+  };
+  wrap.querySelector('#phishMapBtn').onclick = () => {
+    state.screen = state.teamName ? 'worldMap' : 'hub';
+    render();
+  };
+  return wrap;
+}
+
+function renderWorldMap() {
+  const correctAnswers = Object.values(state.answers).filter(answer => answer.correct).length;
+  const wrap = el(`
+    <div class="crt-frame">
+      <div class="crt-inner">
+        <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderGameHud('Choose your next destination', '3 locations', `${correctAnswers}`, state.teamName)}
+        <div class="marquee">
+          <h1>Training World</h1>
+          <div class="sub">CHOOSE A LOCATION TO BEGIN</div>
+        </div>
+        <div class="world-map-panel">
+          <div class="world-map-heading">
+            <h2>Where will your team investigate?</h2>
+            <p>Pick any destination. Each location launches a different cybersecurity mission.</p>
+          </div>
+          <div class="world-map-frame" role="group" aria-label="Cybersecurity training world map">
+            <img class="world-map-art" src="cyberware-world-map.svg" alt="Illustrated map showing Catch a Fish by the sea, UNSAFE Business downtown, and Make Me Secure in the suburbs">
+            <button class="world-map-location world-map-coast" id="mapPhish" type="button" aria-label="Start Catch a Fish by the sea"><span>🎣</span>CATCH A FISH</button>
+            <button class="world-map-location world-map-downtown" id="mapBusiness" type="button" aria-label="Start UNSAFE Business downtown"><span>🏢</span>UNSAFE BUSINESS</button>
+            <button class="world-map-location world-map-suburbs" id="mapSecure" type="button" aria-label="Start Make Me Secure in the suburbs"><span>🏡</span>MAKE ME SECURE</button>
+          </div>
+          <div class="world-map-actions">
+            <span class="world-map-current">Current team: <b>${escapeHudText(state.teamName || 'Inspector')}</b></span>
+            <button class="btn secondary small" id="mapBackToHub">← Main Menu</button>
+          </div>
+        </div>
+        <div class="timestamp">CYBERWARE HQ — WORLD MAP</div>
+      </div>
+    </div>
+  `);
+  wrap.querySelector('#mapPhish').onclick = startPhishWithCurrentTeam;
+  wrap.querySelector('#mapBusiness').onclick = () => {
+    state.screen = 'lobby';
+    render();
+  };
+  wrap.querySelector('#mapSecure').onclick = () => {
+    persistCurrentTeam(true);
+    window.location.href = 'make-me-secure.html';
+  };
+  wrap.querySelector('#mapBackToHub').onclick = () => {
+    state.screen = 'hub';
+    render();
+  };
+  return wrap;
+}
+
+function renderLobby(){
+  const cleared = FLOORS.filter(isFloorCleared).length;
+  const nextFloor = FLOORS.find((floor, index) => isFloorUnlocked(index) && !isFloorCleared(floor));
+  const correctAnswers = Object.values(state.answers).filter(answer => answer.correct).length;
+  const wrap = el(`
+    <div class="crt-frame">
+      <div class="crt-inner">
+        <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderGameHud(nextFloor ? `${nextFloor.name} · Floor ${nextFloor.id}` : 'Final audit report', `${resolvedCount()}/${totalHotspots()}`, `${correctAnswers}`, state.teamName)}
         <div class="marquee" style="border-radius:7px 7px 0 0;">
-          <h1 style="font-size:26px;">Building Directory</h1>
-          <div class="sub">ELEVATOR PANEL  SELECT A FLOOR</div>
+          <h1 style="font-size:26px;">Campaign Map</h1>
+          <div class="sub">CYBERWARE HQ · SELECT YOUR NEXT DEPARTMENT</div>
         </div>
         <div class="lobby">
           <div class="lobby-header">
             <div class="badge" style="color:var(--teal-dark);">CASE PROGRESS: ${resolvedCount()}/${totalHotspots()}</div>
             <div class="badge" style="color:var(--burgundy);">FLOORS CLEARED: ${cleared}/${FLOORS.length}</div>
           </div>
-          <div class="directory">Each floor holds a different department — and a few habits that could get UNSAFE Business Inc. into real trouble. Clear a floor's issues to unlock the next.</div>
-          <div class="floor-list" id="floorList"></div>
+          <div class="campaign-brief">
+            <span class="campaign-brief-icon">${nextFloor ? '🧭' : '🏆'}</span>
+            <span>${nextFloor ? `<b>UP NEXT: ${nextFloor.name}</b><br>${nextFloor.tag}. Investigate every hotspot to unlock the next department.` : '<b>All departments secured.</b><br>Your final audit report is ready.'}</span>
+          </div>
+          <div class="floor-list campaign-map" id="floorList"></div>
           ${cleared===FLOORS.length ? '<div style="margin-top:16px; text-align:center;"><button class="btn good" id="finishBtn">View Final Report</button></div>' : ''}
           <div style="margin-top:12px; text-align:left;">
             <button class="btn secondary small" id="hubFromLobbyBtn">← Back to Hub</button>
@@ -1666,15 +2076,18 @@ function renderLobby(){
   FLOORS.forEach((f,idx)=>{
     const unlocked = isFloorUnlocked(idx);
     const cleared_ = isFloorCleared(f);
+    const progress = floorResolvedCount(f);
+    const roomIcons = ['🛎️','💼','🗂️','🖥️','🏢'];
     const btn = el(`
       <div class="floor-btn ${!unlocked?'locked':''} ${cleared_?'cleared':''}">
-        <div class="floor-num">${f.id}</div>
+        <div class="floor-num" aria-hidden="true">${cleared_ ? '✓' : unlocked ? roomIcons[idx] : '🔒'}</div>
         <div class="floor-info">
-          <div class="fname">${f.name}</div>
+          <div class="fname">FLOOR ${f.id} · ${f.name}</div>
           <div class="ftag">${f.tag}</div>
+          <div class="floor-progress"><span style="width:${Math.round((progress/f.hotspots.length)*100)}%;"></span></div>
         </div>
         <div class="floor-status ${cleared_?'status-clear':unlocked?'status-open':'status-locked'}">
-          ${cleared_ ? '✔ CASE CLOSED' : unlocked ? `${floorResolvedCount(f)}/${f.hotspots.length} FOUND` : '🔒 LOCKED'}
+          ${cleared_ ? '✔ DEPARTMENT SECURED' : unlocked ? (f===nextFloor ? '▶ NEXT MISSION' : `${progress}/${f.hotspots.length} CASES`) : '🔒 LOCKED'}
         </div>
       </div>
     `);
@@ -1685,17 +2098,19 @@ function renderLobby(){
   });
   const finishBtn = wrap.querySelector('#finishBtn');
   if(finishBtn) finishBtn.onclick = ()=>{ state.screen="ending"; render(); };
-  wrap.querySelector('#hubFromLobbyBtn').onclick = ()=>{ state.screen="hub"; render(); };
+  wrap.querySelector('#hubFromLobbyBtn').onclick = ()=>{ state.screen=state.teamName?"worldMap":"hub"; render(); };
   return wrap;
 }
 
 function renderFloor(){
   const floor = FLOORS[state.currentFloor-1];
   const cleared = isFloorCleared(floor);
+  const correctAnswers = Object.values(state.answers).filter(answer => answer.correct).length;
   const wrap = el(`
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderGameHud(`${floor.name} · Floor ${floor.id}`, `${resolvedCount()}/${totalHotspots()}`, `${correctAnswers}`, state.teamName)}
         <div class="scene-header">
           <div>
             <h2>${floor.name}</h2>
@@ -1840,6 +2255,7 @@ function renderEnding(){
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderGameHud('Final audit report', `${resolvedCount()}/${totalHotspots()}`, `${correctCount}`, state.teamName)}
         <div class="marquee">
           <h1 style="font-size:28px;">Audit Complete</h1>
           <div class="sub">FINAL REPORT — UNSAFE BUSINESS INC.</div>
@@ -1895,10 +2311,10 @@ function renderEnding(){
     </div>
   `);
   wrap.querySelector('#againBtn').onclick = ()=>{
-    state = { screen:"hub", currentFloor:1, resolved:{}, answers:{}, teamKey: null, isSolo: true, teamName: "", phishLevel:0, phishPhase:"choose", phishChosenSide:null, phishScore:0, phishTeamKey:null, phishIsSolo:true, phishTeamName:"" };
+    state = { screen:"hub", currentFloor:1, resolved:{}, answers:{}, teamKey: null, isSolo: true, teamName: "", teamMembers: "", isAnonymous:false, phishLevel:0, phishPhase:"choose", phishChosenSide:null, phishScore:0, phishTeamKey:null, phishIsSolo:true, phishTeamName:"" };
     render();
   };
-  wrap.querySelector('#hubFromEndBtn').onclick = ()=>{ state.screen="hub"; render(); };
+  wrap.querySelector('#hubFromEndBtn').onclick = ()=>{ state.screen=state.teamName?"worldMap":"hub"; render(); };
   renderScoreboard(wrap.querySelector('#endingScoreboard'));
   return wrap;
 }
@@ -1912,7 +2328,7 @@ function renderPhishScoreboard(target) {
   container.innerHTML = `
     <div class="scoreboard-container">
       <div class="scoreboard-header">
-        <span style="font-family:'Alfa Slab One'; font-size:12px; letter-spacing:1px;">LEADERBOARD — SPOT THE PHISH</span>
+        <span style="font-family:'Alfa Slab One'; font-size:12px; letter-spacing:1px;">LEADERBOARD — CATCH A FISH</span>
         <span style="font-size:9px; opacity:0.8;">TOP PHISH HUNTERS</span>
       </div>
       <div id="phishScoreboardList" style="max-height: 220px; overflow-y: auto; background:#fff;">
@@ -1994,7 +2410,7 @@ function renderOverallScoreboard(target) {
   const read = (key, mapper) => { try { return JSON.parse(localStorage.getItem(key) || '[]').map(mapper); } catch (e) { return []; } };
   const refresh = () => show([
     read('localRuns', e => ({name:e.teamName || 'Anonymous', game:'UNSAFE Business', percent:Math.round((e.score || 0) / 15 * 100)})),
-    read('phishRuns', e => ({name:e.phishTeamName || 'Anonymous', game:'Spot the Phish', percent:Math.round((e.phishScore || 0) / 5 * 100)})),
+    read('phishRuns', e => ({name:e.phishTeamName || 'Anonymous', game:'Catch a Fish', percent:Math.round((e.phishScore || 0) / 5 * 100)})),
     read('secureRuns', e => ({name:e.secureTeamName || e.teamName || 'Anonymous', game:'Make Me Secure', percent:e.scorePercent ?? Math.round((e.secureScore || 0) / (e.secureMax || 1) * 100)}))
   ]);
   refresh();
@@ -2006,15 +2422,24 @@ function renderPhishRegistration(){
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
         <div class="marquee">
-          <h1>Spot the Phish</h1>
+          <h1>Catch a Fish</h1>
           <div class="sub">CHOOSE YOUR MODE</div>
         </div>
         <div class="title-screen" style="text-align:left; max-width:460px; margin:0 auto; padding-top:24px;">
           <div class="reg-options">
             <div class="reg-tab active" id="pTabSolo">Play Solo</div>
+            ${state.teamName ? '<div class="reg-tab" id="pTabContinue">Continue Team</div>' : ''}
             <div class="reg-tab" id="pTabJoin">Join Team</div>
             <div class="reg-tab" id="pTabCreate">New Team</div>
           </div>
+
+          ${state.teamName ? `
+          <div class="reg-panel" id="pPanelContinue">
+            <p style="font-size:13px;line-height:1.6;">Continue with your current team: <b id="pCurrentTeamName"></b></p>
+            <p id="pCurrentTeamMembers" style="font-size:12px;color:#555;"></p>
+            <div style="text-align:center;"><button class="btn" id="pContinueTeamBtn">Continue with This Team</button></div>
+          </div>
+          ` : ''}
 
           <!-- SOLO -->
           <div class="reg-panel active" id="pPanelSolo">
@@ -2025,7 +2450,7 @@ function renderPhishRegistration(){
               Play anonymously (don't save to leaderboard)
             </label>
             <div style="text-align:center;">
-              <button class="btn" id="pStartSoloBtn">Start Phish Hunt</button>
+              <button class="btn" id="pStartSoloBtn">Go to Fishing Dock</button>
             </div>
           </div>
 
@@ -2061,10 +2486,15 @@ function renderPhishRegistration(){
 
   const tabs = {
     Solo: { tab: wrap.querySelector('#pTabSolo'), panel: wrap.querySelector('#pPanelSolo') },
+    ...(state.teamName ? { Continue: { tab: wrap.querySelector('#pTabContinue'), panel: wrap.querySelector('#pPanelContinue') } } : {}),
     Join: { tab: wrap.querySelector('#pTabJoin'), panel: wrap.querySelector('#pPanelJoin') },
     Create: { tab: wrap.querySelector('#pTabCreate'), panel: wrap.querySelector('#pPanelCreate') }
   };
   let activePhishTeams = {};
+  if (state.teamName) {
+    wrap.querySelector('#pCurrentTeamName').textContent = state.teamName;
+    wrap.querySelector('#pCurrentTeamMembers').textContent = state.teamMembers ? `Members: ${state.teamMembers}` : '';
+  }
 
   function switchPhishTab(key) {
     Object.keys(tabs).forEach(k => {
@@ -2079,7 +2509,7 @@ function renderPhishRegistration(){
     state.phishPhase = 'choose';
     state.phishChosenSide = null;
     state.phishScore = 0;
-    state.screen = 'phish';
+    state.screen = 'phishHub';
     render();
   }
 
@@ -2112,6 +2542,33 @@ function renderPhishRegistration(){
   }
 
   tabs.Solo.tab.onclick = () => switchPhishTab('Solo');
+  if (tabs.Continue) {
+    tabs.Continue.tab.onclick = () => switchPhishTab('Continue');
+    wrap.querySelector('#pContinueTeamBtn').onclick = () => {
+      state.phishTeamName = state.teamName;
+      state.phishIsSolo = state.isSolo;
+      state.phishTeamKey = null;
+      if (state.isAnonymous) {
+        startPhishGame();
+        return;
+      }
+      if (window.db && window.firebasePush && window.firebaseRef && window.firebaseSet) {
+        const teamRef = window.firebasePush(window.firebaseRef(window.db, 'phish_teams'));
+        state.phishTeamKey = teamRef.key;
+        window.firebaseSet(teamRef, {
+          phishTeamName: state.teamName,
+          phishMembers: state.teamMembers || state.teamName,
+          timestamp: new Date().toISOString(),
+          isSolo: state.isSolo
+        }).then(startPhishGame).catch(err => {
+          state.phishTeamKey = null;
+          alert('Could not save this team for Catch a Fish: ' + err.message);
+        });
+      } else {
+        startPhishGame();
+      }
+    };
+  }
   tabs.Join.tab.onclick = () => switchPhishTab('Join');
   tabs.Create.tab.onclick = () => switchPhishTab('Create');
 
@@ -2211,24 +2668,26 @@ function renderPhishEnding(){
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderGameHud('Catch a Fish · Results', `${total}/${total}`, `${score}/${total}`, state.phishTeamName || state.teamName)}
         <div class="marquee">
-          <h1 style="font-size:28px;">Phish Hunt Complete</h1>
-          <div class="sub">CASE FILE CLOSED — SPOT THE PHISH</div>
+          <h1 style="font-size:28px;">Fishing Trip Complete</h1>
+          <div class="sub">ALL DEPTHS EXPLORED — CATCH A FISH</div>
         </div>
         <div class="ending">
+          ${renderFishBasket(score, total)}
           <div class="certificate">
-            <h2>Certificate of Phishing Awareness</h2>
+            <h2>Catch a Fish Training Certificate</h2>
             <div class="line">Awarded to <b>${state.phishTeamName || 'The Inspector'}</b></div>
             <div class="line" style="margin:12px 0;">
               Score: <span style="font-family:'Alfa Slab One';font-size:24px;color:var(--teal-dark);">${score} / ${total}</span> Correct
             </div>
             <div class="line">Rank earned: <b>${rank}</b></div>
-            <div class="line sticky">Phish Hunt: COMPLETED ✔</div>
+            <div class="line sticky">Fishing trip: COMPLETED ✔</div>
           </div>
           <div id="phishEndScoreboard" style="margin-top:28px; text-align:left;"></div>
           <div style="margin-top:24px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
             <button class="btn" id="phishAgainBtn">Play Again</button>
-            <button class="btn secondary" id="phishHubBtn">Back to Hub</button>
+            <button class="btn secondary" id="phishHubBtn">Back to World Map</button>
           </div>
         </div>
         <div class="timestamp">CAM FINAL — PHISH DEBRIEF</div>
@@ -2238,9 +2697,9 @@ function renderPhishEnding(){
 
   wrap.querySelector('#phishAgainBtn').onclick = () => {
     state.phishLevel = 0; state.phishPhase = 'choose'; state.phishChosenSide = null; state.phishScore = 0;
-    state.screen = 'phishRegistration'; render();
+    state.screen = 'phishHub'; render();
   };
-  wrap.querySelector('#phishHubBtn').onclick = () => { state.screen = 'hub'; render(); };
+  wrap.querySelector('#phishHubBtn').onclick = () => { state.screen = state.teamName ? 'worldMap' : 'hub'; render(); };
   renderPhishScoreboard(wrap.querySelector('#phishEndScoreboard'));
   return wrap;
 }
@@ -2298,14 +2757,16 @@ function mailChrome(ex) {
 
 function renderPhish() {
   const levelData = PHISH_LEVELS[state.phishLevel];
+  const depth = levelData ? getPhishDepth(levelData.id) : null;
   if (!levelData) {
     const wrap = el(`
       <div class="crt-frame">
         <div class="crt-inner">
           <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+          ${renderGameHud('Catch a Fish · Complete', `${PHISH_LEVELS.length}/${PHISH_LEVELS.length}`, `${state.phishScore}/${PHISH_LEVELS.length}`, state.phishTeamName || state.teamName)}
           <div class="marquee">
-            <h1>Phishing Master</h1>
-            <div class="sub">ALL SIMULATIONS COMPLETED</div>
+            <h1>Fishing Expert</h1>
+            <div class="sub">ALL SEA DEPTHS EXPLORED</div>
           </div>
           <div style="padding:40px 24px; text-align:center;">
             <div style="font-size:64px; margin-bottom:16px;">🎣</div>
@@ -2325,15 +2786,20 @@ function renderPhish() {
     <div class="crt-frame">
       <div class="crt-inner">
         <div class="rec-tag"><span class="rec-dot"></span>REC</div>
+        ${renderGameHud(`Catch a Fish · ${depth.name}`, `${state.phishLevel + 1}/${PHISH_LEVELS.length}`, `${state.phishScore}/${PHISH_LEVELS.length}`, state.phishTeamName || state.teamName)}
         <div class="scene-header">
           <div>
-            <h2>Spot the Phish: CASE 0${levelData.id}</h2>
-            <div class="ftag">Difficulty: ${levelData.difficulty}</div>
+            <h2>Catch a Fish: CASE 0${levelData.id}</h2>
+            <div class="ftag">Level ${depth.id} · ${depth.name} · ${levelData.difficulty}</div>
           </div>
           <div class="progress-pill">${state.phishLevel + 1}/${PHISH_LEVELS.length} CASES</div>
         </div>
         
         <div style="padding: 20px; background: var(--wall);">
+          <div class="fishing-layer ${depth.id === 1 ? 'surface' : depth.id === 2 ? 'mid' : 'deep'}" style="position:relative;top:auto;left:auto;right:auto;height:auto;min-height:38px;margin-bottom:12px;border:2px solid var(--ink);">
+            <span>🎣 LINE AT ${depth.name.toUpperCase()}</span><span>LEVEL ${depth.id} / 3</span>
+          </div>
+          ${renderFishBasket(state.phishScore, PHISH_LEVELS.length)}
           <div style="margin-bottom:16px;">
             <h3 style="font-family:'Alfa Slab One', serif; font-size:18px; margin:0 0 6px;">${levelData.title}</h3>
             <p style="margin:0; font-family:'Space Mono', monospace; font-size:12px; color:var(--teal-dark);">${levelData.brief}</p>
@@ -2341,6 +2807,7 @@ function renderPhish() {
           <div style="font-family:'Space Mono', monospace; font-weight:bold; margin-bottom:10px; color:var(--burgundy);">
             ${revealed ? 'Review the evidence below.' : 'Which exhibit is the phishing attempt?'}
           </div>
+          <div style="font-size:11px;line-height:1.5;margin-bottom:12px;color:#555;">Training-only mockups using familiar platform names. No service is affiliated, and sample links are inactive.</div>
           
           <div class="exhibits ${revealed ? 'revealed' : ''}">
             ${['A','B'].map(side => `
@@ -2365,7 +2832,7 @@ function renderPhish() {
     html += `
           <div class="banner ${correct ? 'good':'bad'}">
             <div style="font-weight:bold;">${correct ? '✔' : '✘'}</div>
-            <div><b>${correct ? 'Correct.' : 'Not quite.'}</b> Exhibit ${levelData.phishSide} was the phish${correct ? '' : ` — you picked ${state.phishChosenSide}`}.</div>
+            <div><b>${correct ? 'Great catch!' : 'That one got away.'}</b> Exhibit ${levelData.phishSide} was the imposter${correct ? '' : ` — you picked ${state.phishChosenSide}`}.<br><span>${levelData.reason}</span></div>
           </div>
           <div style="margin-top:20px; text-align:right;">
             <button class="btn good" id="nextCaseBtn">${state.phishLevel >= PHISH_LEVELS.length - 1 ? 'See Results →' : 'Next Case →'}</button>
@@ -2414,20 +2881,25 @@ function renderPhish() {
     };
   }
   
-  wrap.querySelector('#quitPhishBtn').onclick = () => { state.screen="hub"; render(); };
+  wrap.querySelector('#quitPhishBtn').onclick = () => { state.screen=state.teamName?"worldMap":"hub"; render(); };
 
   return wrap;
 }
 
 window.onFirebaseInit = () => {
-  if (state.screen === 'hub' || state.screen === 'title' || state.screen === 'ending') {
+  if (state.screen === 'hub' || state.screen === 'leaderboards' || state.screen === 'worldMap' || state.screen === 'title' || state.screen === 'ending') {
     render();
   }
 };
 
+try {
+  if (new URLSearchParams(window.location.search).get('map') === '1') {
+    restoreTeamForWorldMap();
+  }
+} catch (err) {
+  console.error('Could not restore the world map route:', err);
+}
 render();
 </script>
 </body>
 </html>
-
-
